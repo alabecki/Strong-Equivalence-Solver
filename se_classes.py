@@ -11,3 +11,8 @@ class Rule(object):
 		self.headExtension = []						
 									
 
+class Model(object):
+	def __init__ (self, name, Y, X):
+		self.name = name
+		self.Y = Y
+		self.X = X

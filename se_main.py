@@ -1,3 +1,5 @@
+
+
 from sympy import Symbol
 from sympy.abc import*
 from sympy.logic.boolalg import to_cnf
@@ -11,6 +13,7 @@ from shutil import copyfile
 from itertools import*
 import os
 import re
+from sympy import simplify
 
 from se_classes import*
 
@@ -68,30 +71,85 @@ def _mapping(propositions):
 def construct_program(file):
 	rules = {}
 	count = 0
-	for line in file:
+	lines = (line.rstrip() for line in file) # All lines including the blank ones
+	lines = (line for line in lines if line)
+	print("Lines")
+	for line in lines:
+		print(line)
 		if line.startswith("#"):
 			continue
+		pos_body = []
+		neg_body = []
+		name = "r" + str(count)
 		print("Line: %s" % (line))
 		_line = re.sub(r'\s+', '', line)	
 		_line = _line.strip()
-		print("_Line: %s" % (_line))
-		div1 = _line.split(":-")
-		head = div1[0]
-		print("div1[0]: %s" % (div1[0]))
-		print("div1[1]: %s" % (div1[1]))
-	
-		body = div1[1].split(".")
-		pos_body = []
-		neg_body = []
-		for b in body:
-			if b.startswith("not"):
-				neg_body.append(b)
+		print("Stripped Line: %s" % (_line))
+		if _line.startswith(":-"):
+			print("Starts with :-")
+			body = _line.replace(":-", "")
+			if "." not in body:
+				print("No . in body")
+				if body.startswith("not"):
+					print("starts with not")
+					neg_body.append(body)
+				else:
+					print("does not start with not")
+					pos_body.append(body)
+				new = Rule(name, _line, "", pos_body, neg_body)
+				rules.update({name: new})
+				count += 1
 			else:
-				pos_body.append(b)
-		name = "r" + str(count)
-		new = Rule(name, line, head, pos_body, neg_body)
-		rules.update({name: new})
-		count += 1
+				body = div[1].split(".")
+				for b in body:
+					if b.startswith("not"):
+						print("States with 'not' ")
+						neg_body.append(b)
+					else:
+						print("Does not start with 'not' ")
+						pos_body.append(b)
+				new = Rule(name, _line, "", pos_body, neg_body)
+				rules.update({name: new})
+				count += 1
+		elif _line.endswith(":-"):
+			print("Ends with :-")
+			head = _line.replace(":-", "")
+			new = Rule(name, _line, head, "", "")
+			rules.update({name: new})
+			count += 1
+
+		else:
+			print("Does not end with :-")
+			#print("_Line: %s" % (_line))
+			div = _line.split(":-")
+			head = div[0]
+			if "." not in div[1]:
+				print("No . in body")
+				if div[1].startswith("not"):
+					print("starts with not")
+					neg_body.append(div[1])
+				else:
+					print("does not start with not")
+					print("WTF is div1[1]???? %s" % (div[1]))
+					pos_body.append(div[1])
+					name = "r" + str(count)
+					new = Rule(name, line, head, pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
+			else:
+			#print("div1[0]: %s" % (div1[0]))
+			#print("div1[1]: %s" % (div1[1]))
+				print("Has . in body")
+				body = div1[1].split(".")
+				for b in body:
+					if b.startswith("not"):
+						neg_body.append(b)
+					else:
+						pos_body.append(b)
+				name = "r" + str(count)
+				new = Rule(name, line, head, pos_body, neg_body)
+				rules.update({name: new})
+				count += 1
 	return rules
 
 def formula_translation(rules):
@@ -99,13 +157,23 @@ def formula_translation(rules):
 	for r, rule in rules.items():
 		pante = ""
 		nante = ""
+		if len(rule.pos_body) == 0 and len(rule.neg_body) == 0:
+			con = rule.head
+			for char in con:
+				char = Symbol(char)
+			con = simplify(con)
+			formulas.append(con)
+			continue
 		if len(rule.pos_body) > 0:
 			pante = str(rule.pos_body[0]).replace("not", "~")
-			pante = symbols(pante)
 			if "->" in str(rule.pos_body[0]):
 				imp = str(rule.pos_body[0]).split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
+			for char in pante:
+				char = Symbol(char)
+			pante = simplify(pante)
 			if len(rule.pos_body) > 1:
+				print("WTG is the len? %s" % (len(rule.pos_body)))
 				count = 1
 				while count <= len(rule.pos_body):
 					add = str(rule.pos_body[count]).replace("not", "~")
@@ -113,15 +181,20 @@ def formula_translation(rules):
 						imp = str(rule.pos_body[count]).split("->")
 						imp[0] =  "~" + imp[0]
 						add = imp[0] + "|" + imp[1]
-					add = symbols(add)
-					pante = And(pante, add)
+					for char in add:
+						 char = Symbol(char)
+					add = simplify(add)
+					pante = And(add, pante)
 					count += 1
 		if len(rule.neg_body) > 0:
 			nante = str(rule.neg_body[0]).replace("not", "~")
-			nante = symbols(nante)
 			if "->" in str(rule.neg_body[0]):
 				imp = str(rule.neg_body[0]).split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
+			for char in nante:
+				char = Symbol(char)
+			nante = simplify(nante)
+			print(nante)
 			if len(rule.neg_body) > 1:
 				count = 1
 				while count <= len(rule.neg_body):
@@ -129,13 +202,11 @@ def formula_translation(rules):
 					if "->" in str(rule.neg_body[count]):
 						imp = str(rule.neg_body[count]).split("->")
 						add = "~" + imp[0] + "|" + imp[1]
-					add = symbols(add)
-					nante = And(nante, add)
+					for char in add:
+						char = Symbol(char)
+					add = simplify(nante)
+					nante = And(add, nante)
 					count += 1
-		if pante:
-			pante = to_cnf(pante)
-		if nante: 
-			nante = to_cnf(nante)
 		if pante and nante:		
 			ante = And(pante, nante)
 		else:
@@ -143,34 +214,46 @@ def formula_translation(rules):
 				ante = pante
 			else:
 				ante = nante
-		ante = Not(ante)
-		con = ""
-		if rule.head:
-			con = to_cnf(rule.head)
-		print("Con: %s " %(con))
-		print("ante: %s "% (ante))
-
-		f = Or(ante, con)
-		formulas.append(f)
+		print("before head check")
+		if len(rule.head) > 0:
+			print("after head check")
+			con = rule.head
+			for char in con:
+				char = Symbol(con)
+			con = simplify(rule.head)
+		#print("Con: %s " %(con))
+		#print("ante: %s "% (ante))
+			print("Do we get here?")
+			print(ante)
+			ante = Not(ante)
+			print(ante)
+			f = Or(ante, con)
+			formulas.append(f)
+		else:
+			print("Should be no head for second rule!")
+			ant = Not(ante)
+			formulas.append(ant)
 	return formulas
 
 def rule_compliment(rules, propositions):
-	_rules = {}
+	crules = []
 	for r, rule in rules.items():
 		new = ""
+		temp = str(rule.item)
 		for p in propositions:
-			temp = str(rule.item)
-			if str(p) in temp:
-				print("In temp %s " % (str(p)))
+			if str(p).startswith("_"):
+				continue
+			elif str(p) in temp:
+				#print("Before %s " % (temp))
 				ex = "_" + str(p)
-				print(ex)
-				temp1 = temp.replace(str(p), ex)
-				print("temp1: %s" % (temp1))
-				temp2 = temp1.replace("~" + ex, "~" + str(p))
-				new = Symbol(temp2)
-		_rules[r] = new
-	return _rules
-
+				#print(ex)
+				temp = temp.replace(str(p), ex)
+				print("After1 *****************: %s" % (temp))
+				temp = temp.replace("~" + ex, "~" + str(p))
+				temp = temp.replace("not" + ex, "not" + str(p))
+				#print("After2: %s" % (temp))
+		crules.append(temp)
+	return crules
 
 
 def formula_compliment(formulas, propositions):
@@ -209,6 +292,53 @@ def construct_worlds(propositions):
 		worlds[name] = world							#the new world is added to the list of worlds
 		count +=1
 	return worlds
+
+def get_com_org_imp(propositions):
+	comIorg = []
+	for p in propositions:
+		if "_" not in str(p):
+			temp = "~_"+ str(p) + "|" + str(p)
+			for char in temp:
+				char = Symbol(temp)
+			temp = simplify(temp)
+			comIorg.append(temp)
+	return comIorg
+
+def create_condition(formula, _formulas, comIorg):
+	conditions = comIorg[0]
+	for f in formulas:
+		conditions = And(f, conditions)
+	for _f in _formulas:
+		conditions = And(_f, conditions)
+	for cio in comIorg:
+		conditions = And(cio, conditions)
+	return conditions
+
+def get_Models(listYY):
+	models = []
+	count = 0
+	if len(listYY) == 1 and listYY[0] == False:
+		return models
+	else:
+		for state in listYY:
+			y = set()
+			x = set()
+			for key, value in state.items():
+				if value == True and "_" not in str(key):
+					y.add(key)
+					temp = "_" + str(key)
+					#for char in temp:
+					#	char = Symbol(char)
+					if state[temp] == True:
+						x.add(key)
+			name = "m" + count
+			new = Model(name, y, x)
+			models.append(new)
+			count += 1
+		return models 
+
+
+
 
 
 #Main_____________________________________________________________________________________________________________________
@@ -255,18 +385,61 @@ while(True):
 	worlds = construct_worlds(propositions)
 
 	formulas = formula_translation(rules)
-	_rules = rule_compliment(rules, propositions)
-
-	_formulas = formula_compliment(formulas, propositions)
-
-	print("Lets see what just happened_________________________________________________________________________")
-
-	print("formulas:")
+	print("formulas______________________________________________________:")
 	for f in formulas:
 		print(f)
+
+	crules = rule_compliment(rules, propositions)
+	print("_____ crules:")
+	for crule in crules:
+		print(crule)
+
+	_rules = construct_program(crules)
+
 	print("_________ _rules:")
 	for rule in _rules.values():
-		print(rule)
+		print(rule.item)
+
+	_formulas= formula_translation(_rules)
+	print("_formulas____________________________________________________")
+	for _f in _formulas:
+		print (_f)
+	print("comIorg:")
+	comIorg = get_com_org_imp(propositions)
+	for cio in comIorg:
+		print(cio)
+	
+	condition = create_condition(formulas, _formulas, comIorg)
+	print("Condition:")
+	print(condition)
+	print("YY:")
+	YY = satisfiable(condition, all_models = True)
+
+	#for yy in YY:
+	#	print(yy)
+
+
+	listYY = list(YY)
+	print("listYY:")
+	for l in listYY:
+		print(l)
+	print("Models")
+	model = get_Models(listYY)
+
+	for m in model:
+		print (m.X)
+		print(m.Y)
+
+
+
+
+
+
+
+
+
+	#print("Lets see what just happened_________________________________________________________________________")
+
 
 #Now that we have the rules of the program P stored, we need to construct gamma(P).
 
