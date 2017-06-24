@@ -12,7 +12,8 @@ class Rule(object):
 									
 
 class Model(object):
-	def __init__ (self, name, Y, X):
+	def __init__ (self, name, Y, X, XY):
 		self.name = name
 		self.Y = Y
 		self.X = X
+		self.XY = XY

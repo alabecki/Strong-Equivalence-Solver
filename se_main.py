@@ -17,6 +17,13 @@ from sympy import simplify
 
 from se_classes import*
 
+
+commands = {
+	"1": "Open file containing a single program to get SE models",
+	"2": "Open file containing two programs to get SE models and check for equilvance",
+	"3": "Exit"
+}
+
 	
 def get_file():
 	while True:
@@ -31,6 +38,7 @@ def get_file():
 			print("The file you selected does not exist, please try again\n")
 
 def obtain_atomic_formulas(file):
+	flag = False
 	propositions = set()
 	lines = (line.rstrip() for line in file)
 	lines = (line for line in lines if line)
@@ -68,7 +76,8 @@ def _mapping(propositions):
 	return mapping
 
 
-def construct_program(file):
+def construct_programA(file):
+	flag = False
 	rules = {}
 	count = 0
 	lines = (line.rstrip() for line in file) # All lines including the blank ones
@@ -76,70 +85,64 @@ def construct_program(file):
 	print("Lines")
 	for line in lines:
 		print(line)
+		if "SECOND" in line:
+			return rules
 		if line.startswith("#"):
 			continue
 		pos_body = []
 		neg_body = []
 		name = "r" + str(count)
-		print("Line: %s" % (line))
 		_line = re.sub(r'\s+', '', line)	
 		_line = _line.strip()
-		print("Stripped Line: %s" % (_line))
 		if _line.startswith(":-"):
 			print("Starts with :-")
 			body = _line.replace(":-", "")
 			if "." not in body:
-				print("No . in body")
 				if body.startswith("not"):
-					print("starts with not")
 					neg_body.append(body)
+					new = Rule(name, _line, "", pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
 				else:
-					print("does not start with not")
 					pos_body.append(body)
-				new = Rule(name, _line, "", pos_body, neg_body)
-				rules.update({name: new})
-				count += 1
+					new = Rule(name, _line, "", pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
 			else:
 				body = div[1].split(".")
 				for b in body:
 					if b.startswith("not"):
-						print("States with 'not' ")
 						neg_body.append(b)
 					else:
-						print("Does not start with 'not' ")
 						pos_body.append(b)
 				new = Rule(name, _line, "", pos_body, neg_body)
 				rules.update({name: new})
 				count += 1
 		elif _line.endswith(":-"):
-			print("Ends with :-")
 			head = _line.replace(":-", "")
 			new = Rule(name, _line, head, "", "")
 			rules.update({name: new})
 			count += 1
 
 		else:
-			print("Does not end with :-")
 			#print("_Line: %s" % (_line))
 			div = _line.split(":-")
 			head = div[0]
 			if "." not in div[1]:
-				print("No . in body")
+				#print("No . in body")
 				if div[1].startswith("not"):
-					print("starts with not")
+				#	print("starts with not")
 					neg_body.append(div[1])
 				else:
-					print("does not start with not")
-					print("WTF is div1[1]???? %s" % (div[1]))
+				#	print("does not start with not")
+				#	print("WTF is div1[1]???? %s" % (div[1]))
 					pos_body.append(div[1])
-					name = "r" + str(count)
-					new = Rule(name, line, head, pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
+				name = "r" + str(count)
+				new = Rule(name, line, head, pos_body, neg_body)
+				rules.update({name: new})
+				count += 1
 			else:
-			#print("div1[0]: %s" % (div1[0]))
-			#print("div1[1]: %s" % (div1[1]))
-				print("Has . in body")
+				#print("Has . in body")
 				body = div1[1].split(".")
 				for b in body:
 					if b.startswith("not"):
@@ -150,6 +153,89 @@ def construct_program(file):
 				new = Rule(name, line, head, pos_body, neg_body)
 				rules.update({name: new})
 				count += 1
+	return rules
+
+
+def construct_programB(file):
+	print("ProgramB")
+	rules = {}
+	count = 0
+	flag = False
+	lines = (line.rstrip() for line in file) # All lines including the blank ones
+	lines = (line for line in lines if line)
+	for line in lines:
+		if "SECOND" in line:
+			flag = True
+		if flag == False:
+			continue
+		else:
+			print("Begin--")
+			if line.startswith("#"):
+				continue
+			pos_body = []
+			neg_body = []
+			name = "r" + str(count)
+			_line = re.sub(r'\s+', '', line)	
+			_line = _line.strip()
+			if _line.startswith(":-"):
+				print("Starts with :-")
+				body = _line.replace(":-", "")
+				if "." not in body:
+					if body.startswith("not"):
+						neg_body.append(body)
+						new = Rule(name, _line, "", pos_body, neg_body)
+						rules.update({name: new})
+						count += 1
+					else:
+						pos_body.append(body)
+						new = Rule(name, _line, "", pos_body, neg_body)
+						rules.update({name: new})
+						count += 1
+				else:
+					body = div[1].split(".")
+					for b in body:
+						if b.startswith("not"):
+							neg_body.append(b)
+						else:
+							pos_body.append(b)
+					new = Rule(name, _line, "", pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
+			elif _line.endswith(":-"):
+				head = _line.replace(":-", "")
+				new = Rule(name, _line, head, "", "")
+				rules.update({name: new})
+				count += 1
+
+			else:
+				print("_Line: %s" % (_line))
+				div = _line.split(":-")
+				head = div[0]
+				if "." not in div[1]:
+					print("No . in body")
+					if div[1].startswith("not"):
+						print("starts with not")
+						neg_body.append(div[1])
+					else:
+						print("does not start with not")
+						print("WTF is div1[1]???? %s" % (div[1]))
+						pos_body.append(div[1])
+					name = "r" + str(count)
+					new = Rule(name, line, head, pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
+				else:
+					print("Has . in body")
+					body = div1[1].split(".")
+					for b in body:
+						if b.startswith("not"):
+							neg_body.append(b)
+						else:
+							pos_body.append(b)
+					name = "r" + str(count)
+					new = Rule(name, line, head, pos_body, neg_body)
+					rules.update({name: new})
+					count += 1
 	return rules
 
 def formula_translation(rules):
@@ -239,7 +325,9 @@ def rule_compliment(rules, propositions):
 	crules = []
 	for r, rule in rules.items():
 		new = ""
-		temp = str(rule.item)
+		_temp = str(rule.item)
+		temp = re.sub(r'\s+', '', _temp)
+		temp = temp.strip('')
 		for p in propositions:
 			if str(p).startswith("_"):
 				continue
@@ -251,7 +339,7 @@ def rule_compliment(rules, propositions):
 				print("After1 *****************: %s" % (temp))
 				temp = temp.replace("~" + ex, "~" + str(p))
 				temp = temp.replace("not" + ex, "not" + str(p))
-				#print("After2: %s" % (temp))
+				print("After2: %s" % (temp))
 		crules.append(temp)
 	return crules
 
@@ -304,7 +392,7 @@ def get_com_org_imp(propositions):
 			comIorg.append(temp)
 	return comIorg
 
-def create_condition(formula, _formulas, comIorg):
+def create_condition(formulas, _formulas, comIorg):
 	conditions = comIorg[0]
 	for f in formulas:
 		conditions = And(f, conditions)
@@ -323,22 +411,30 @@ def get_Models(listYY):
 		for state in listYY:
 			y = set()
 			x = set()
+			xy = set()
 			for key, value in state.items():
 				if value == True and "_" not in str(key):
 					y.add(key)
 					temp = "_" + str(key)
 					#for char in temp:
-					#	char = Symbol(char)
+				#	char = Symbol(char)
+					temp = Symbol(temp)
 					if state[temp] == True:
 						x.add(key)
-			name = "m" + count
-			new = Model(name, y, x)
+			pair = (frozenset(x),frozenset(y))
+			xy.add(pair)
+			name = "m" + str(count)
+			new = Model(name, y, x, xy)
 			models.append(new)
 			count += 1
-		return models 
+		return models
 
-
-
+def get_se_model(model):
+			se_model = set()
+			for m in model:
+				item = frozenset(m.XY)
+				se_model.add(item)
+			return se_model 
 
 
 #Main_____________________________________________________________________________________________________________________
@@ -351,84 +447,166 @@ print ("========================================================================
 
 while(True):
 	do = ""
-	print("What would you like to do? \n")
-	while(do != "1" and do !="2"):
-		do = input("(1) Open a file, (2), exit program\n")
-	if(do == "2"):
+	while do not in commands.keys():
+		for k, v in commands.items():
+			print("%s: %s" % (k, v))
+		do = input()
+	if(do == "3"):
 		sys.exit()
 	if(do == "1"):
 		res = get_file()
 		file = res[0]
 		file_name = res[1]
+		file.seek(0)
+		propositions = obtain_atomic_formulas(file)
+		file.seek(0)
+		rules = construct_programA(file)		# parses input text, make a Rule object for each rule, saves objects in dictionary
+		file.seek(0)
+		print("number of rules: %s" % len(rules))
+		print("Rules: ")
+		for r in rules.values():
+			print (r.name, r.item)
+		formulas = formula_translation(rules)
+		print("formulas______________________________________________________:")
+		for f in formulas:
+			print(f)
+		crules = rule_compliment(rules, propositions)
+		print("_____ crules:")
+		for crule in crules:
+			print(crule)
+		_rules = construct_programA(crules)
+		print("_________ _rules:")
+		for rule in _rules.values():
+			print(rule.item)
+		_formulas= formula_translation(_rules)
+		print("_formulas____________________________________________________")
+		for _f in _formulas:
+			print (_f)
+		print("comIorg:")
+		comIorg = get_com_org_imp(propositions)
+		for cio in comIorg:
+			print(cio)
+		condition = create_condition(formulas, _formulas, comIorg)
+		print("Condition:")
+		print(condition)
+		print("YY:")
+		YY = satisfiable(condition, all_models = True)
+		listYY = list(YY)
+		print("listYY:")
+		for l in listYY:
+			print(l)
+		print("Models")
+		model = get_Models(listYY)
+		for m in model:
+			print ("X: %s" % (m.X))
+			print("Y: %s " % (m.Y))
+
+	elif(do == "2"):
+		res = get_file()
+		file = res[0]
+		file_name = res[1]
+		file.seek(0)
+		line_num = 0
+		propositions = obtain_atomic_formulas(file)
+		print("Propositions B:")
+		for p in propositions:
+			print(p)
+		file.seek(0)
+		rules1 = construct_programA(file)
+		print("number of rules in Program A: %s" % len(rules1))
+		print("Program A Rules: ")
+		for r in rules1.values():
+			print(r.name, r.item)
+		file.seek(0)
+		rules2 = construct_programB(file)
+		print("number of rules in Program B: %s" % len(rules2))
+		print("Program B Rules: ")
+		for r in rules2.values():
+			print(r.name, r.item)
+		formulas1 = formula_translation(rules1)
+		print("formulas A ______________________________________________________:")
+		for f in formulas1:
+			print(f)
+		formulas2 = formula_translation(rules2)
+		print("formulas B ______________________________________________________:")
+		for f in formulas2:
+			print(f)
+		crules1 = rule_compliment(rules1, propositions)
+		print("_____ crules A:")
+		for crule in crules1:
+			print(crule)
+		crules2 = rule_compliment(rules2, propositions)
+		print("_____ crules B:")
+		for crule in crules2:
+			print(crule)
+		_rules1 = construct_programA(crules1)
+		print("_________ _rules A:")
+		for rule in _rules1.values():
+			print(rule.name, rule.item)
+		_rules2 = construct_programB(crules2)
+		print("_________ _rules B:")
+		for rule in _rules2.values():
+			print(rule.name, rule.item)
+		_formulas1= formula_translation(_rules1)
+		print("_formulas A ____________________________________________________")
+		for _f in _formulas1:
+			print (_f)
+		_formulas2= formula_translation(_rules2)
+		print("_formulas B____________________________________________________")
+		for _f in _formulas2:
+			print (_f)
+		print("comIorg:")
+		comIorg = get_com_org_imp(propositions)
+		for cio in comIorg:
+			print(cio)
+		
+		condition1 = create_condition(formulas1, _formulas1, comIorg)
+		print("Condition A:")
+		print(condition1)
+		print("YY:")
+		condition2 = create_condition(formulas2, _formulas2, comIorg)
+		print("Condition B:")
+		print(condition2)
+		print("YY:")
+		YY1 = satisfiable(condition1, all_models = True)
+		listYY1 = list(YY1)
+		print("listYY A:")
+		for l in listYY1:
+			print(l)
+		YY2 = satisfiable(condition2, all_models = True)
+		listYY2 = list(YY2)
+		print("listYY B:")
+		for l in listYY2:
+			print(l)
+		print("A Models")
+		model1 = get_Models(listYY1)
+		for m in model1:
+			print ("X: %s" % (m.X))
+			print("Y: %s " % (m.Y))
+		print("B Models")
+		model2 = get_Models(listYY2)
+		for m in model2:
+			print ("X: %s" % (m.X))
+			print("Y: %s " % (m.Y))
+
+		se_model1 = get_se_model(model1)
+		se_model2 = get_se_model(model2)
+
+		if se_model2 == se_model1:
+			print("The the programs are Strongly Equivalant")
+		else:
+			print("The programs are not Strongly Equivalant")
+
+
+
+
+
 	else:
 		print("I'm sorry, could you repeat your command? \n")
 
-	file.seek(0)
-	propositions = obtain_atomic_formulas(file)
-	for p in propositions:
-		print(p)
-	file.seek(0)
-	rules = construct_program(file)		# parses input text, make a Rule object for each rule, saves objects in dictionary
-	file.seek(0)
-	print("number of rules: %s" % len(rules))
-	print("Rules: ")
-	for k, v in rules.items():
-		print("%s, %s " % (k, v.item))
-		print("Head: %s" % (v.head))
-		print("P-Body: ")
-		for p in v.pos_body:
-			print (p)
-		print ("N-Body: ")
-		for p in v.neg_body:
-			print(p)
 
-	worlds = construct_worlds(propositions)
 
-	formulas = formula_translation(rules)
-	print("formulas______________________________________________________:")
-	for f in formulas:
-		print(f)
-
-	crules = rule_compliment(rules, propositions)
-	print("_____ crules:")
-	for crule in crules:
-		print(crule)
-
-	_rules = construct_program(crules)
-
-	print("_________ _rules:")
-	for rule in _rules.values():
-		print(rule.item)
-
-	_formulas= formula_translation(_rules)
-	print("_formulas____________________________________________________")
-	for _f in _formulas:
-		print (_f)
-	print("comIorg:")
-	comIorg = get_com_org_imp(propositions)
-	for cio in comIorg:
-		print(cio)
 	
-	condition = create_condition(formulas, _formulas, comIorg)
-	print("Condition:")
-	print(condition)
-	print("YY:")
-	YY = satisfiable(condition, all_models = True)
-
-	#for yy in YY:
-	#	print(yy)
-
-
-	listYY = list(YY)
-	print("listYY:")
-	for l in listYY:
-		print(l)
-	print("Models")
-	model = get_Models(listYY)
-
-	for m in model:
-		print (m.X)
-		print(m.Y)
 
 
 
@@ -441,7 +619,15 @@ while(True):
 	#print("Lets see what just happened_________________________________________________________________________")
 
 
-#Now that we have the rules of the program P stored, we need to construct gamma(P).
+#Now#for k, v in rules.items():
+	#	print("%s, %s " % (k, v.item))
+	#	print("Head: %s" % (v.head))
+	#	print("P-Body: ")
+	#	for p in v.pos_body:
+	#		print (p)
+	#	print ("N-Body: ")
+	#	for p in v.neg_body:
+	#		print(p) that we have the rules of the program P stored, we need to construct gamma(P).
 
 
 
