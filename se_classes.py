@@ -17,3 +17,5 @@ class Model(object):
 		self.Y = Y
 		self.X = X
 		self.XY = XY
+
+
