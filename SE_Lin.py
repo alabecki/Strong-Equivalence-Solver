@@ -240,11 +240,22 @@ while(True):
 
 		g2B = gamma2_rules(rulesB, propositions)
 
-		g1B.insert(0, "SECOND")
+		#g1B.insert(0, "SECOND")
 		g2B.insert(0, "SECOND")
 
+		print("g1B")
+		for g in g1B:
+			print(g)
+		print("g2B")
+		for g in g2B:
+			print(g)
+
 		g1rulesB = construct_programA(g1B)
-		g2rulesB = construct_programA(g2B)
+		g2rulesB = construct_programB(g2B)
+
+		print("g1rulesB______________________________________________________")
+		for v in g1rulesB.values():
+			print(v.item)
 
 		print("g2rulesB______________________________________________________")
 		for v in g2rulesB.values():

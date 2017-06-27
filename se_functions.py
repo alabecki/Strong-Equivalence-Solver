@@ -34,7 +34,6 @@ def get_file():
 			print("The file you selected does not exist, please try again\n")
 
 def obtain_atomic_formulas(file):
-	flag = False
 	propositions = set()
 	lines = (line.rstrip() for line in file)
 	lines = (line for line in lines if line)
@@ -44,7 +43,7 @@ def obtain_atomic_formulas(file):
 		_line = re.sub(r'\s+', '', line)
 		_line = _line.replace(".", ",")
 		_line = _line.replace("&", ",")
-		_line = _line.replace("|", ",")
+		_line = _line.replace(";", ",")
 		_line = _line.replace("->", ",")
 		_line = _line.replace("~", ",")
 		_line =  _line.replace(":-", ",")
@@ -260,6 +259,7 @@ def formula_translation(rules):
 		nante = ""
 		if (len(rule.pos_body) == 0 and len(rule.neg_body) == 0) or rule.pos_body == "TRUE":
 			con = rule.head
+			con = con.replace(";", "|")
 			for char in con:
 				char = Symbol(char)
 			con = simplify(con)
@@ -267,6 +267,8 @@ def formula_translation(rules):
 			continue
 		if len(rule.pos_body) > 0:
 			pante = str(rule.pos_body[0]).replace("not", "~")
+			pante = pante.replace(";", "|")
+			pante = pante.replace(",", "&")
 			if "->" in str(rule.pos_body[0]):
 				imp = str(rule.pos_body[0]).split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
@@ -278,8 +280,10 @@ def formula_translation(rules):
 				count = 1
 				while count <= len(rule.pos_body):
 					add = str(rule.pos_body[count]).replace("not", "~")
-					if "->" in str(rule.pos_body[count]):
-						imp = str(rule.pos_body[count]).split("->")
+					add = add.replace(";", "|")
+					add = add.replace(",", "&")
+					if "->" in add:
+						imp = add.split("->")
 						imp[0] =  "~" + imp[0]
 						add = imp[0] + "|" + imp[1]
 					for char in add:
@@ -289,9 +293,11 @@ def formula_translation(rules):
 					count += 1
 		if len(rule.neg_body) > 0:
 			nante = str(rule.neg_body[0]).replace("not", "~")
-			if "->" in str(rule.neg_body[0]):
-				imp = str(rule.neg_body[0]).split("->")
-				pante = "~" + imp[0] + "|" + imp[1]
+			nante = nante.replace(";", "|")
+			nante = nante.replace(",", "&")
+			if "->" in nante:
+				imp = nante.split("->")
+				nante = "~" + imp[0] + "|" + imp[1]
 			for char in nante:
 				char = Symbol(char)
 			nante = simplify(nante)
@@ -300,6 +306,8 @@ def formula_translation(rules):
 				count = 1
 				while count <= len(rule.neg_body):
 					add = rule.neg_body[count].replace("not", "~")
+					add = add.replace(";", "|")
+					add = add.replace(",", "&")
 					if "->" in str(rule.neg_body[count]):
 						imp = str(rule.neg_body[count]).split("->")
 						add = "~" + imp[0] + "|" + imp[1]
@@ -319,6 +327,7 @@ def formula_translation(rules):
 		if len(rule.head) > 0 and rule.head != "FALSE":
 	#		print("after head check")
 			con = rule.head
+			con = con.replace(";", "|")
 			for char in con:
 				char = Symbol(con)
 			con = simplify(con)
