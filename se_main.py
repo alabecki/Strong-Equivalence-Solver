@@ -20,8 +20,8 @@ from se_functions import*
 
 
 commands = {
-	"1": "Open file containing a single program to get SE models",
-	"2": "Open file containing two programs to get SE models and check for equilvance",
+	"1": "Get SE models of a logic program (from file with one program)",
+	"2": "Check if logic program  A entails logic program B (from file with two programs)",
 	"3": "Exit"
 }
 
@@ -51,48 +51,12 @@ while(True):
 		file = res[0]
 		file_name = res[1]
 		file.seek(0)
-		propositions = obtain_atomic_formulas(file)
-		file.seek(0)
-		rules = construct_programA(file)		# parses input text, make a Rule object for each rule, saves objects in dictionary
-		file.seek(0)
-		print("number of rules: %s" % len(rules))
-		print("Rules: ")
-		for r in rules.values():
-			print (r.name, r.item)
-		formulas = formula_translation(rules)
-		print("formulas______________________________________________________:")
-		for f in formulas:
-			print(f)
-		crules = rule_compliment(rules, propositions)
-		print("_____ crules:")
-		for crule in crules:
-			print(crule)
-		_rules = construct_programA(crules)
-		print("_________ _rules:")
-		for rule in _rules.values():
-			print(rule.item)
-		_formulas= formula_translation(_rules)
-		print("_formulas____________________________________________________")
-		for _f in _formulas:
-			print (_f)
-		print("comIorg:")
-		comIorg = get_com_org_imp(propositions)
-		for cio in comIorg:
-			print(cio)
-		condition = create_condition(formulas, _formulas, comIorg)
-		print("Condition:")
-		print(condition)
-		print("YY:")
-		YY = satisfiable(condition, all_models = True)
-		listYY = list(YY)
-		print("listYY:")
-		for l in listYY:
-			print(l)
+		model = initializeA(file)
+		print("\n")
 		print("Models")
-		model = get_Models(listYY)
 		for m in model:
-			print ("X: %s" % (m.X))
-			print("Y: %s " % (m.Y))
+			print("< %s, %s >" % (m.X, m.Y))
+		print("\n")
 		file.close()
 
 	elif(do == "2"):
@@ -101,103 +65,36 @@ while(True):
 		file_name = res[1]
 		file.seek(0)
 		line_num = 0
-		propositions = obtain_atomic_formulas(file)
-		print("Propositions:")
-		for p in propositions:
-			print(p)
-		file.seek(0)
-		rules1 = construct_programA(file)
-		print("number of rules in Program A: %s" % len(rules1))
-		print("Program A Rules: ")
-		for r in rules1.values():
-			print(r.name, r.item)
-		file.seek(0)
-		rules2 = construct_programB(file)
-		print("number of rules in Program B: %s" % len(rules2))
-		print("Program B Rules: ")
-		for r in rules2.values():
-			print(r.name, r.item)
-		formulas1 = formula_translation(rules1)
-		print("formulas A ______________________________________________________:")
-		for f in formulas1:
-			print(f)
-		formulas2 = formula_translation(rules2)
-		print("formulas B ______________________________________________________:")
-		for f in formulas2:
-			print(f)
-		crules1 = rule_compliment(rules1, propositions)
-		print("_____ crules A:")
-		for crule in crules1:
-			print(crule)
-		crules2 = rule_compliment(rules2, propositions)
-		print("_____ crules B:")
-		for crule in crules2:
-			print(crule)
-		_rules1 = construct_programA(crules1)
-		print("_________ _rules A:")
-		for rule in _rules1.values():
-			print(rule.name, rule.item)
-		crules2.insert(0, "SECOND")
-		_rules2 = construct_programB(crules2)
-		print("_________ _rules B:")
-		for rule in _rules2.values():
-			print(rule.name, rule.item)
-			print("Head %s, pb: %s, nb: %s" % (rule.head, rule.pos_body, rule.neg_body))
-		_formulas1= formula_translation(_rules1)
-		print("_formulas A ____________________________________________________")
-		for _f in _formulas1:
-			print (_f)
-		_formulas2= formula_translation(_rules2)
-		print("_formulas B____________________________________________________")
-		for _f in _formulas2:
-			print (_f)
-		print("comIorg:")
-		comIorg = get_com_org_imp(propositions)
-		for cio in comIorg:
-			print(cio)
-		
-		condition1 = create_condition(formulas1, _formulas1, comIorg)
-		print("Condition A:")
-		print(condition1)
-		print("YY:")
-		condition2 = create_condition(formulas2, _formulas2, comIorg)
-		print("Condition B:")
-		print(condition2)
-		print("YY:")
-		YY1 = satisfiable(condition1, all_models = True)
-		listYY1 = list(YY1)
-		print("listYY A:")
-		for l in listYY1:
-			print(l)
-		YY2 = satisfiable(condition2, all_models = True)
-		listYY2 = list(YY2)
-		print("listYY B:")
-		for l in listYY2:
-			print(l)
-		print("A Models")
-		model1 = get_Models(listYY1)
-		for m in model1:
-			print ("X: %s" % (m.X))
-			print("Y: %s " % (m.Y))
-		print("B Models")
-		model2 = get_Models(listYY2)
-		for m in model2:
-			print ("X: %s" % (m.X))
-			print("Y: %s " % (m.Y))
+		modelA = initializeA(file)
+		modelB = initializeB(file)
+		print("\n")
+		print(" A Models:")
+		for m in modelA:
+			print("< %s, %s >" % (m.X, m.Y))
+		print("\n")
+		print(" B Models:")
+		for m in modelB:
+			print("< %s, %s >" % (m.X, m.Y))
+		print("\n")
 
-		se_model1 = get_se_model(model1)
-		se_model2 = get_se_model(model2)
+		se_modelA = get_se_model(modelA)
+		se_modelB = get_se_model(modelB)
 
-		if se_model2 == se_model1:
+		if se_modelA == se_modelB:
 			print("The the programs are Strongly Equivalant")
+
+		elif se_modelB.issubset(se_modelA):
+			print("The first program entails the second")
+		elif se_modelA.issubset(se_modelB):
+			print("The second program entails the first")
+		
 		else:
-			print("The programs are not Strongly Equivalant")
-
+			print("The programs are not Strongly Equivalant and it is not the case that one entails the other")
 		file.close()
+		print("\n")
 
-
-
-
+	elif(do == "3"):
+		print("Goodby")
 
 	else:
 		print("I'm sorry, could you repeat your command? \n")

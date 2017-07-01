@@ -20,6 +20,76 @@ from se_classes import*
 FALSE = Symbol("FALSE")
 TRUE = Symbol("TRUE")
 
+def initializeA(file):
+		file.seek(0)
+		propositions = obtain_atomic_formulas(file, "A")
+		file.seek(0)
+		rules = construct_programA(file)		# parses input text, make a Rule object for each rule, saves objects in dictionary
+		file.seek(0)
+		print("number of rules: %s" % len(rules))
+		print("Program A rules: ")
+		for r in rules.values():
+			print (r.name, r.item)
+		formulas = formula_translation(rules)
+		print("Formulas __________________________________________________________")
+		for f in formulas:
+			print(f)
+	
+		crules = rule_compliment(rules, propositions)
+		print("CRULES____________________________________________________________")
+		for c in crules:
+			print (c)
+	
+		_rules = construct_programA(crules)
+	
+		_formulas= formula_translation(_rules)
+		
+		comIorg = get_com_org_imp(propositions)
+		condition = create_condition(formulas, _formulas, comIorg)
+		print("condition______________________________________________________________")
+		print(condition)
+		YY = satisfiable(condition, all_models = True)
+		listYY = list(YY)
+		print("\n")
+		model = get_Models(listYY)
+		return model
+
+def initializeB(file):
+		file.seek(0)
+		propositions = obtain_atomic_formulas(file, "B")
+		file.seek(0)
+		rules = construct_programB(file)
+		file.seek(0)
+		print("number of rules: %s" % len(rules))
+		print("Program B rules: ")
+		for r in rules.values():
+			print (r.name, r.item)
+		formulas = formula_translation(rules)
+		print("Formulas __________________________________________________________")
+		for f in formulas:
+			print(f)
+		crules = rule_compliment(rules, propositions)
+		crules.insert(0, "SECOND")
+		print("CRULES______________________________________________________________________-")
+		for c in crules:
+			print(c)
+		_rules = construct_programB(crules)
+		print("__rules))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))")
+		for r in _rules.values():
+			print (r.name, r.item)
+		_formulas= formula_translation(_rules)
+		print("________formulas______________________________________________________")
+		for f in _formulas:
+			print(f)
+		comIorg = get_com_org_imp(propositions)
+		condition = create_condition(formulas, _formulas, comIorg)
+		print("condition______________________________________________________________")
+		print(condition)
+		YY = satisfiable(condition, all_models = True)
+		listYY = list(YY)
+		model = get_Models(listYY)
+		return model
+
 
 def get_file():
 	while True:
@@ -33,11 +103,20 @@ def get_file():
 		else:
 			print("The file you selected does not exist, please try again\n")
 
-def obtain_atomic_formulas(file):
+def obtain_atomic_formulas(file, X):
 	propositions = set()
 	lines = (line.rstrip() for line in file)
 	lines = (line for line in lines if line)
+	flag = False
 	for line in lines:
+		if X == "B":
+			if "SECOND" in line:
+				flag = True
+			if flag == False:
+				continue
+		if X == "A":
+			if "SECOND" in line:
+				return propositions
 		if line.startswith("#") or "SECOND" in line:
 			continue 
 		_line = re.sub(r'\s+', '', line)
@@ -45,13 +124,17 @@ def obtain_atomic_formulas(file):
 		_line = _line.replace("&", ",")
 		_line = _line.replace(";", ",")
 		_line = _line.replace("->", ",")
-		_line = _line.replace("~", ",")
+		_line = _line.replace("=>", ",")
+		_line = _line.replace("~", "")
+		_line = _line.replace("!", "")
 		_line =  _line.replace(":-", ",")
 		_line = _line.replace("(", "")
 		_line = _line.replace(")", "")
 		_line = _line.replace("not", "")
 		_line = _line.replace("TRUE", "")
 		_line = _line.replace("FALSE", "")
+		_line = _line.replace("+", ",")
+		_line = _line.replace("*", ",")
 
 		new_props = _line.split(",")
 		new_props = list(filter(None, new_props))
@@ -148,7 +231,7 @@ def construct_programA(file):
 				count += 1
 			else:
 				#print("Has . in body")
-				body = div1[1].split(".")
+				body = div[1].split(".")
 				for b in body:
 					if b.startswith("not"):
 						neg_body.append(b)
@@ -162,7 +245,7 @@ def construct_programA(file):
 
 
 def construct_programB(file):
-	#print("ProgramB")
+	print("ProgramB")
 	rules = {}
 	count = 0
 	flag = False
@@ -175,7 +258,8 @@ def construct_programB(file):
 		if flag == False:
 			continue
 		else:
-		#	print("Begin--")
+			print("Begin--")
+			print(line)
 			if line.startswith("#") or "SECOND" in line:
 				continue
 			pos_body = []
@@ -184,7 +268,7 @@ def construct_programB(file):
 			_line = re.sub(r'\s+', '', line)	
 			_line = _line.strip()
 			if _line.startswith(":-") or _line.startswith(str(FALSE)):
-	#			print("Starts with :- or FALSE")
+				print("Starts with :- or FALSE")
 				head = ""
 				if _line.startswith(str(FALSE)):
 					head = "FALSE"
@@ -222,24 +306,26 @@ def construct_programB(file):
 				count += 1
 
 			else:
-	#			print("_Line: %s" % (_line))
+				print("_Line: %s" % (_line))
 				div = _line.split(":-")
 				head = div[0]
 				if "." not in div[1]:
-	#				print("No . in body")
+					print("No . in body")
 					if div[1].startswith("not"):
-	#					print("starts with not")
+						print("starts with not")
 						neg_body.append(div[1])
 					else:
-	#					print("does not start with not")
-	#				print("WTF is div1[1]???? %s" % (div[1]))
+						print("does not start with not")
 						pos_body.append(div[1])
+					print("DO WE GET HERE?????????????")
+					print(line)
+					print(neg_body)
 					name = "r" + str(count)
 					new = Rule(name, line, head, pos_body, neg_body)
 					rules.update({name: new})
 					count += 1
 				else:
-	#				print("Has . in body")
+					print("Has . in body")
 					body = div1[1].split(".")
 					for b in body:
 						if b.startswith("not"):
@@ -260,6 +346,7 @@ def formula_translation(rules):
 		if (len(rule.pos_body) == 0 and len(rule.neg_body) == 0) or rule.pos_body == "TRUE":
 			con = rule.head
 			con = con.replace(";", "|")
+			con = con.replace("+", "|")
 			for char in con:
 				char = Symbol(char)
 			con = simplify(con)
@@ -267,23 +354,38 @@ def formula_translation(rules):
 			continue
 		if len(rule.pos_body) > 0:
 			pante = str(rule.pos_body[0]).replace("not", "~")
+			pante = pante.replace("!", "~")
 			pante = pante.replace(";", "|")
+			pante = pante.replace("+", "|")
 			pante = pante.replace(",", "&")
+			pante = pante.replace("*", "&")
 			if "->" in str(rule.pos_body[0]):
 				imp = str(rule.pos_body[0]).split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
+			if "=>" in str(rule.pos_body[0]):
+				imp = str(rule.pos_body[0]).split("=>")
+				pante = "~" + imp[0] + "|" + imp[1]
 			for char in pante:
 				char = Symbol(char)
+			print(pante)
 			pante = simplify(pante)
 			if len(rule.pos_body) > 1:
-	#			print("WTG is the len? %s" % (len(rule.pos_body)))
+				print("WTG is the len? %s" % (len(rule.pos_body)))
 				count = 1
-				while count <= len(rule.pos_body):
+				while count < len(rule.pos_body):
+					print(count)
 					add = str(rule.pos_body[count]).replace("not", "~")
+					add = add.replace("!", "~")
 					add = add.replace(";", "|")
+					add = add.replace("+", "|")
 					add = add.replace(",", "&")
+					add = add.replace("*", "&")
 					if "->" in add:
 						imp = add.split("->")
+						imp[0] =  "~" + imp[0]
+						add = imp[0] + "|" + imp[1]
+					if "=>" in add:
+						imp = add.split("=>")
 						imp[0] =  "~" + imp[0]
 						add = imp[0] + "|" + imp[1]
 					for char in add:
@@ -293,10 +395,16 @@ def formula_translation(rules):
 					count += 1
 		if len(rule.neg_body) > 0:
 			nante = str(rule.neg_body[0]).replace("not", "~")
+			nante = nante.replace("!", "~")
 			nante = nante.replace(";", "|")
+			nante = nante.replace("+", "|")
 			nante = nante.replace(",", "&")
+			nante = nante.replace("*", "&")
 			if "->" in nante:
 				imp = nante.split("->")
+				nante = "~" + imp[0] + "|" + imp[1]
+			if "=>" in nante:
+				imp = nante.split("=>")
 				nante = "~" + imp[0] + "|" + imp[1]
 			for char in nante:
 				char = Symbol(char)
@@ -304,12 +412,18 @@ def formula_translation(rules):
 			#print(nante)
 			if len(rule.neg_body) > 1:
 				count = 1
-				while count <= len(rule.neg_body):
-					add = rule.neg_body[count].replace("not", "~")
+				while count < len(rule.neg_body):
+					add = str(rule.neg_body[count]).replace("not", "~")
+					add = add.replace("!", "~")
 					add = add.replace(";", "|")
+					add = add.replace("+", "|")
 					add = add.replace(",", "&")
-					if "->" in str(rule.neg_body[count]):
-						imp = str(rule.neg_body[count]).split("->")
+					add = add.replace("*", "&")
+					if "->" in add:
+						imp = add.split("->")
+						add = "~" + imp[0] + "|" + imp[1]
+					if "=>" in nante:
+						imp = nante.split("=>")
 						add = "~" + imp[0] + "|" + imp[1]
 					for char in add:
 						char = Symbol(char)
@@ -324,10 +438,11 @@ def formula_translation(rules):
 			else:
 				ante = nante
 	#	print("before head check")
-		if len(rule.head) > 0 and rule.head != "FALSE":
+		if len(rule.head) > 0 and rule.head != "FALSE" and rule.head != "0":
 	#		print("after head check")
 			con = rule.head
 			con = con.replace(";", "|")
+			con = con.replace("+", "|")
 			for char in con:
 				char = Symbol(con)
 			con = simplify(con)
@@ -356,31 +471,17 @@ def rule_compliment(rules, propositions):
 			if str(p).startswith("_"):
 				continue
 			elif str(p) in temp:
-				#print("Before %s " % (temp))
+				print("Before %s " % (temp))
 				ex = "_" + str(p)
-				#print(ex)
+				print(ex)
 				temp = temp.replace(str(p), ex)
-	#			print("After1 *****************: %s" % (temp))
+				print("After1 *****************: %s" % (temp))
 				temp = temp.replace("~" + ex, "~" + str(p))
 				temp = temp.replace("not" + ex, "not" + str(p))
-	#			print("After2: %s" % (temp))
+				temp = temp.replace("!" + ex, "!" + str(p))
+				print("After2: %s" % (temp))
 		crules.append(temp)
 	return crules
-
-
-def formula_compliment(formulas, propositions):
-	_formulas = []
-	for f in formulas:
-		new = ""
-		for p in propositions:
-			temp = str(f)
-			if str(p) in temp:
-				ex = "_" + str(p)
-				temp = temp.replace(str(p), ex)
-				temp = temp.replace("~" + ex, "~" + str(p))
-				new = Symbol(temp)
-		_formulas.append(new)
-	return _formulas
 
 
 def construct_worlds(propositions):
@@ -459,3 +560,5 @@ def get_se_model(model):
 				item = frozenset(m.XY)
 				se_model.add(item)
 			return se_model 
+
+
