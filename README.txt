@@ -2,7 +2,7 @@ SE Models Solver
 
 1. Introduction:
 
-The program reads text files with logic programs. When reading a file with only one logic program, it will return the set of strong equivlance (SE) models for that program. When reading a file with two logic programs it will return the SE models for each program and indicate whether or not the two programs are equivalent or if one program entails the other.
+The program reads text files with logic programs. When reading a file with only one logic program, it will return the set of strong equivlance (SE) models for that program. When reading a file with two logic programs, it will return the SE models for each program and indicate whether or not the two programs are equivalent or if one program entails the other.
 
 2. Program File Format:
 
@@ -17,9 +17,11 @@ The following symbols may be used for Boolean connectives:
 {"|", "+", ";"} for OR 
 {"->", "=>"} for IMPLIES
 
-In addition to Boolean connectives we have:
+In addition to Boolean connectives, there is:
 {"~", "!", "not"} for NOT (negation as failure)
 {"TRUE", "1"} for TRUE
-{"FALSE", 0} for FALSE
+{"FALSE", "0"} for FALSE
+
+Members of b are separated with periods "." (although, one can just as easily make b a single conjunctive formula)
 
 

@@ -20,6 +20,7 @@ from se_classes import*
 FALSE = Symbol("FALSE")
 TRUE = Symbol("TRUE")
 
+
 def initializeA(file):
 		file.seek(0)
 		propositions = obtain_atomic_formulas(file, "A")
@@ -133,6 +134,8 @@ def obtain_atomic_formulas(file, X):
 		_line = _line.replace("not", "")
 		_line = _line.replace("TRUE", "")
 		_line = _line.replace("FALSE", "")
+		_line = _line.replace("1", "")
+		_line = _line.replace("0", "")
 		_line = _line.replace("+", ",")
 		_line = _line.replace("*", ",")
 
@@ -174,13 +177,16 @@ def construct_programA(file):
 		name = "r" + str(count)
 		_line = re.sub(r'\s+', '', line)	
 		_line = _line.strip()
-		if _line.startswith(":-") or _line.startswith(str(FALSE)):
+		if _line.startswith(":-") or _line.startswith(str(FALSE)) or _line.startswith("0"):
 		#print("Starts with :-")
 			head = ""
 			if _line.startswith(str(FALSE)):
 				head = "FALSE"
+			if _line.startswith("0"):
+				head = "0"
 			body = _line.replace(":-", "")
 			body = body.replace("FALSE", "")
+			body = body.replace("0", "")
 			if "." not in body:
 				if body.startswith("not"):
 					neg_body.append(body)
@@ -202,12 +208,15 @@ def construct_programA(file):
 				new = Rule(name, _line, "", pos_body, neg_body)
 				rules.update({name: new})
 				count += 1
-		elif _line.endswith(":-") or _line.endswith(str(TRUE)):
+		elif _line.endswith(":-") or _line.endswith(str(TRUE)) or _line.endswith("1"):
 			head = _line.replace(":-", "")
 			head = head.replace("TRUE", "")
+			head = head.replace("1", "")
 			pos_body = ""
 			if _line.endswith(str(TRUE)):
 				pos_body = "TRUE"
+			if _line.endswith("1"):
+				pos_body = "1"
 			new = Rule(name, _line, head, pos_body, "")
 			rules.update({name: new})
 			count += 1
@@ -356,27 +365,30 @@ def formula_translation(rules):
 			pante = str(rule.pos_body[0]).replace("not", "~")
 			pante = pante.replace("!", "~")
 			pante = pante.replace(";", "|")
+			print("1: %s" % (pante))
 			pante = pante.replace("+", "|")
 			pante = pante.replace(",", "&")
 			pante = pante.replace("*", "&")
-			if "->" in str(rule.pos_body[0]):
-				imp = str(rule.pos_body[0]).split("->")
+			if "->" in pante:
+				imp = pante.split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
-			if "=>" in str(rule.pos_body[0]):
-				imp = str(rule.pos_body[0]).split("=>")
+			print("2: %s" % (pante))
+			if "=>" in pante:
+				imp = pante.split("=>")
 				pante = "~" + imp[0] + "|" + imp[1]
 			for char in pante:
 				char = Symbol(char)
-			print(pante)
+			print("3: %s" % (pante))
 			pante = simplify(pante)
 			if len(rule.pos_body) > 1:
-				print("WTG is the len? %s" % (len(rule.pos_body)))
+				print("WTF is the len? %s" % (len(rule.pos_body)))
 				count = 1
 				while count < len(rule.pos_body):
 					print(count)
 					add = str(rule.pos_body[count]).replace("not", "~")
 					add = add.replace("!", "~")
 					add = add.replace(";", "|")
+					print("2: %s" % (add) )
 					add = add.replace("+", "|")
 					add = add.replace(",", "&")
 					add = add.replace("*", "&")
@@ -422,12 +434,12 @@ def formula_translation(rules):
 					if "->" in add:
 						imp = add.split("->")
 						add = "~" + imp[0] + "|" + imp[1]
-					if "=>" in nante:
-						imp = nante.split("=>")
+					if "=>" in add:
+						imp = add.split("=>")
 						add = "~" + imp[0] + "|" + imp[1]
 					for char in add:
 						char = Symbol(char)
-					add = simplify(nante)
+					add = simplify(add)
 					nante = And(add, nante)
 					count += 1
 		if pante and nante:		
@@ -528,7 +540,7 @@ def create_condition(formulas, _formulas, comIorg):
 	return conditions
 
 def get_Models(listYY):
-	models = []
+	models = set()
 	count = 0
 	if len(listYY) == 1 and listYY[0] == False:
 		return models
@@ -550,7 +562,7 @@ def get_Models(listYY):
 			xy.add(pair)
 			name = "m" + str(count)
 			new = Model(name, y, x, xy)
-			models.append(new)
+			models.add(new)
 			count += 1
 		return models
 

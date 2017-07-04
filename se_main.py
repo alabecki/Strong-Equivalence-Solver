@@ -53,7 +53,9 @@ while(True):
 		file.seek(0)
 		model = initializeA(file)
 		print("\n")
+		print("----------------------------------------------------------------------------------")
 		print("Models")
+		print("----------------------------------------------------------------------------------")
 		for m in model:
 			print("< %s, %s >" % (m.X, m.Y))
 		print("\n")
@@ -68,11 +70,15 @@ while(True):
 		modelA = initializeA(file)
 		modelB = initializeB(file)
 		print("\n")
+		print("----------------------------------------------------------------------------------")
 		print(" A Models:")
+		print("----------------------------------------------------------------------------------")
 		for m in modelA:
 			print("< %s, %s >" % (m.X, m.Y))
 		print("\n")
+		print("----------------------------------------------------------------------------------")
 		print(" B Models:")
+		print("----------------------------------------------------------------------------------")
 		for m in modelB:
 			print("< %s, %s >" % (m.X, m.Y))
 		print("\n")
@@ -80,16 +86,26 @@ while(True):
 		se_modelA = get_se_model(modelA)
 		se_modelB = get_se_model(modelB)
 
+
 		if se_modelA == se_modelB:
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("The the programs are Strongly Equivalant")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
 		elif se_modelB.issubset(se_modelA):
-			print("The first program entails the second")
-		elif se_modelA.issubset(se_modelB):
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("The second program entails the first")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		elif se_modelA.issubset(se_modelB):
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			print("The first program entails the second")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 		
 		else:
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 			print("The programs are not Strongly Equivalant and it is not the case that one entails the other")
+			print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
 		file.close()
 		print("\n")
 
