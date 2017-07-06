@@ -1,10 +1,41 @@
 SE Models Solver
 
-1. Introduction:
+_________________________________________________________________________ 
+ 
+1. Installation
+
+To run the program, a computer must have Python 3.x installed.
+The program was written on Python 3.6 but may run correctly on older 
+versions. It is recommended that the user should be using 3.4 or higher.
+The program can be opened in on the command-line in Windows or Linux
+machine. 
+
+In the command line, go to the directory in which you have placed the 
+folder containing the program and type:
+
+	python se_main.py
+
+(If you have Anaconda installed on your computer you need only type 
+“se_main.py”)
+
+The program makes use of the logic module from the sympy library, which 
+is itself dependent upon the pmath library. If these have not been 
+installed, the user will be informed when trying to run the program. 
+It is recommended that the user use pip when installing Python libraries.
+To install sympy and pmath using pip simply type:
+
+pip install sympy
+pip install pmath
+
+__________________________________________________________________________________________
+
+2. Introduction:
 
 The program reads text files with logic programs. When reading a file with only one logic program, it will return the set of strong equivlance (SE) models for that program. When reading a file with two logic programs, it will return the SE models for each program and indicate whether or not the two programs are equivalent or if one program entails the other.
 
-2. Program File Format:
+___________________________________________________________________________________________
+
+3. Program File Format:
 
 Each rule has the following format:
 	a :- b
@@ -28,6 +59,28 @@ Members of b are separated with periods "." (although, one can just as easily ma
 
 It is necessary to have a line with "SECOND" between the two programs so that the program knows where the first programs ends and where the second begins.
 
-All lines not including rules should begin with # 
+All lines not including rules should begin with #
 
+Examples:
 
+ p :- 
+ q :- TRUE
+p;q ::= not r
+p;r :- r,s
+p|q :- s -> r
+q ::=  not(p * q)
+ :- q & r
+
+______________________________________________________________________________________________
+
+4. Functions
+
+After opening the program the user will be prompted to enter the name of a program file. There are two choices here depending on whether or not the file contains one or two programs. 
+Upon receiving a single program file, the program will return the set of SE models for that program.
+Upon receiving a double program file, the program will return the SE models of both programs and tell the user how the two are related. The programs may be strongly equivilant or one migh entail the other, or no such relations might obtain. 
+The user then has one of three additional choices:
+
+(a) Print the results to a .txt file
+(b) Add a rule to a loaded program and view the models of the resulting program
+(c) Remove a rule from a loaded program and view the models of the resulting program 
+ 

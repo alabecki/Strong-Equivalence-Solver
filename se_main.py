@@ -17,6 +17,8 @@ from sympy import simplify
 
 from se_classes import*
 from se_functions import*
+#from win32 import win32print
+
 
 
 commands = {
@@ -26,14 +28,14 @@ commands = {
 }
 
 additionA = {
-	"1": "Print SE Models",
+	"1": "Write models to .txt",
 	"2": "Add rule to program and regenerate SE Models",
 	"3": "Remove rule from program and regenerate SE Models",
 	"4": "Return to Primary Commands"
 }
 
 additionB = {
-	"1": "Print SE Models",
+	"1": "Write models to .txt",
 	"2": "Add rule to program A and regenerate SE Models",
 	"3": "Add rule to program B and regenerate SE Models",
 	"4": "Remove rule from program A and regenerate SE Models",
@@ -59,6 +61,7 @@ while(True):
 	while do not in commands.keys():
 		for k, v in commands.items():
 			print("%s: %s" % (k, v))
+		print("\n")
 		do = input()
 	if(do == "3"):
 		sys.exit()
@@ -90,12 +93,13 @@ while(True):
 			print("Would you like to do anything else with this program?---------------------------")
 			for k, p in additionA.items():
 				print("%s: %s" % (k, p))
+			print("\n")
 			opt = ""
 			while (opt not in additionA.keys()):
 				opt = input()
 			if opt == "1":
 				save = create_txt_single(model)
-				print(save)
+				#print(save)
 			if opt == "2":
 				print("Please enter a new rule to add to the Program")
 				new_rule = input()
@@ -189,12 +193,13 @@ while(True):
 			print("Would you like to do anything else with these programs?-------------------------")
 			for k, p in additionB.items():
 				print("%s: %s" % (k, p))
+			print("\n")
 			opt = ""
 			while (opt not in additionB.keys()):
 				opt = input()
 			if opt == "1":
 				save = create_txt_double(modelA, modelB)
-				print_models(save)
+				#print_models(save)
 			if opt == "2":
 				print("Please enter a new rule to add to Program A")
 				new_rule = input()
@@ -299,9 +304,11 @@ while(True):
 				more = False	
 
 	elif(do == "3"):
+		print("\n")
 		print("Goodbye \n")
 
 	else:
+		print("\n")
 		print("I'm sorry, could you repeat your command? \n")
 
 

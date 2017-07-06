@@ -15,7 +15,7 @@ import re
 from sympy import simplify
 import os, sys 
 #from pywin32 import win32print 
-from win32 import win32print
+#from win32 import win32print
 
 
 from se_classes import*
@@ -406,61 +406,70 @@ def get_se_model(model):
 
 
 def create_txt_single(model):
-	text_name = "temp-file1324.txt" 
+	print("Please provide a name for the new file\n")
+	text_name = input()
+	text_name = text_name + ".txt"
 	save = open(text_name, 'a+')
 	save.write("\n")
-	save.write("__________________________________________________ ")
-	save.write("SE Models")
+	save.write("__________________________________________________\n ")
+	save.write("SE Models \n")
 	save.write("__________________________________________________ \n \n")
 	for m in model:
-		save.write("< %s, %s >" % (m.X, m.Y))
+		save.write("< %s, %s > \n" % (m.X, m.Y))
 	save.write("\n")
 	save.write("__________________________________________________ \n \n")
+	print("\n")
+	print("%s has been written to disk\n" % (text_name))
 	save.close()
 	return save 
 
 def create_txt_double(modelA, modelB):
-	text_name = "temp-file1324.txt" 
+	print("Please provide a name for the new file\n")
+	text_name = input()
+	text_name = text_name + ".txt"
 	save = open(text_name, 'a+')
 	save.write("\n")
-	save.write("__________________________________________________ ")
-	save.write("SE Models")
+	save.write("__________________________________________________ \n")
+	save.write("SE Models \n")
 	save.write("__________________________________________________ \n \n")
 	save.write("Program A:")
 	save.write("\n")
 	for m in modelA:
-		save.write("< %s, %s >" % (m.X, m.Y))
+		save.write("< %s, %s > \n" % (m.X, m.Y))
 	save.write("\n")
 	save.write("Program B:")
 	save.write("__________________________________________________ \n \n")
 	save.write("\n")
 	for m in modelB:
-		save.write("< %s, %s >" % (m.X, m.Y))
+		save.write("< %s, %s > \n" % (m.X, m.Y))
 	save.write("\n")
+	print("\n")
 	save.write("__________________________________________________ \n \n")
+	print("%s has been written to disk\n" % (text_name))
+	save.close()
 	return save
 
-def print_models(data):
+#def print_models(data):
 	#print("Which printer would you like to use?")
 	#printers = win32print.EnumPrinters(5)
 	#for p in printers:
 	#	print(p)
 	#printer_name = input()
 
-	data = open("temp-file1324.txt", "rb").read () + b"\x0c"
+#	data = open("temp-file1324.txt", "rb").read () + b"\x0c"
 	
-	printer_name = win32print.GetDefaultPrinter()
-	printer = win32print.OpenPrinter (printer_name)
-	try:
-		job = win32print.StartDocPrinter(printer, 1, ("test of raw data", None, "RAW"))
-		try:
-			win32print.StartPagePrinter (printer)
-			win32print.WritePrinter (printer, data)
-			win32print.EndPagePrinter (printer)
-		finally:
-			win32print.EndDocPrinter (printer)
-	finally:
-		win32print.ClosePrinter (printer)
+#	printer_name = win32print.GetDefaultPrinter()
+#	printer = win32print.OpenPrinter (printer_name)
+#	try:
+#		job = win32print.StartDocPrinter(printer, 1, ("test of raw data", None, "RAW"))
+#		try:
+#			win32print.StartPagePrinter (printer)
+#			win32print.WritePrinter (printer, data)
+#			win32print.EndPagePrinter (printer)
+#		finally:
+#			win32print.EndDocPrinter (printer)
+#	finally:
+#		win32print.ClosePrinter (printer)
 
 
 def results(modelA, modelB):
