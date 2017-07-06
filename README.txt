@@ -7,7 +7,9 @@ The program reads text files with logic programs. When reading a file with only 
 2. Program File Format:
 
 Each rule has the following format:
-  a :- b
+	a :- b
+	or
+	a ::= b
 
 Where "a" is a disjunction of atomic propositions and "b" is a set of propositional formulas with negation as failure instead of classical negation.
 
@@ -23,5 +25,9 @@ In addition to Boolean connectives, there is:
 {"FALSE", "0"} for FALSE
 
 Members of b are separated with periods "." (although, one can just as easily make b a single conjunctive formula)
+
+It is necessary to have a line with "SECOND" between the two programs so that the program knows where the first programs ends and where the second begins.
+
+All lines not including rules should begin with # 
 
 

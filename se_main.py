@@ -142,8 +142,8 @@ while(True):
 						#file = open(res[1], "r")
 						model = initialize(rules, propositions, "A")
 						for m in model:
-						print("< %s, %s >" % (m.X, m.Y))
-						flag = True
+							print("< %s, %s >" % (m.X, m.Y))
+							flag = True
 				if flag == False:
 					print("%s is not one of the rules in the program" % (drop))
 
