@@ -1,4 +1,5 @@
 # SE Functions
+#Windows Version 
 
 from sympy import Symbol
 from sympy.abc import*
@@ -7,87 +8,38 @@ from sympy.logic.boolalg import Not, And, Or
 from sympy.logic.inference import satisfiable, valid
 from mpmath import*
 from itertools import product
-import sys
 from copy import deepcopy
 from shutil import copyfile
 from itertools import*
-import os
 import re
 from sympy import simplify
+import os, sys 
+#from pywin32 import win32print 
+from win32 import win32print
+
 
 from se_classes import*
 
-FALSE = Symbol("FALSE")
-TRUE = Symbol("TRUE")
 
 
-def initializeA(file):
-		file.seek(0)
-		propositions = obtain_atomic_formulas(file, "A")
-		file.seek(0)
-		rules = construct_programA(file)		# parses input text, make a Rule object for each rule, saves objects in dictionary
-		file.seek(0)
-		print("number of rules: %s" % len(rules))
-		print("Program A rules: ")
-		for r in rules.values():
-			print (r.name, r.item)
+def initialize(rules, propositions, pro):
 		formulas = formula_translation(rules)
-		print("Formulas __________________________________________________________")
-		for f in formulas:
-			print(f)
-	
+		#print("Formulas __________________________________________________________")
+		#for f in formulas:
+		#	print(f)
 		crules = rule_compliment(rules, propositions)
-		print("CRULES____________________________________________________________")
-		for c in crules:
-			print (c)
-	
-		_rules = construct_programA(crules)
-	
+		_rules = construct_program(crules, "A")
 		_formulas= formula_translation(_rules)
-		
+		#print("_Formulas___________________________________________________________")
+		#for f in _formulas:
+		#	print(f)
 		comIorg = get_com_org_imp(propositions)
 		condition = create_condition(formulas, _formulas, comIorg)
-		print("condition______________________________________________________________")
-		print(condition)
+		#print("condition______________________________________________________________")
+		#print(condition)
 		YY = satisfiable(condition, all_models = True)
 		listYY = list(YY)
 		print("\n")
-		model = get_Models(listYY)
-		return model
-
-def initializeB(file):
-		file.seek(0)
-		propositions = obtain_atomic_formulas(file, "B")
-		file.seek(0)
-		rules = construct_programB(file)
-		file.seek(0)
-		print("number of rules: %s" % len(rules))
-		print("Program B rules: ")
-		for r in rules.values():
-			print (r.name, r.item)
-		formulas = formula_translation(rules)
-		print("Formulas __________________________________________________________")
-		for f in formulas:
-			print(f)
-		crules = rule_compliment(rules, propositions)
-		crules.insert(0, "SECOND")
-		print("CRULES______________________________________________________________________-")
-		for c in crules:
-			print(c)
-		_rules = construct_programB(crules)
-		print("__rules))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))")
-		for r in _rules.values():
-			print (r.name, r.item)
-		_formulas= formula_translation(_rules)
-		print("________formulas______________________________________________________")
-		for f in _formulas:
-			print(f)
-		comIorg = get_com_org_imp(propositions)
-		condition = create_condition(formulas, _formulas, comIorg)
-		print("condition______________________________________________________________")
-		print(condition)
-		YY = satisfiable(condition, all_models = True)
-		listYY = list(YY)
 		model = get_Models(listYY)
 		return model
 
@@ -119,34 +71,37 @@ def obtain_atomic_formulas(file, X):
 			if "SECOND" in line:
 				return propositions
 		if line.startswith("#") or "SECOND" in line:
-			continue 
-		_line = re.sub(r'\s+', '', line)
-		_line = _line.replace(".", ",")
-		_line = _line.replace("&", ",")
-		_line = _line.replace(";", ",")
-		_line = _line.replace("->", ",")
-		_line = _line.replace("=>", ",")
-		_line = _line.replace("~", "")
-		_line = _line.replace("!", "")
-		_line =  _line.replace(":-", ",")
-		_line = _line.replace("(", "")
-		_line = _line.replace(")", "")
-		_line = _line.replace("not", "")
-		_line = _line.replace("TRUE", "")
-		_line = _line.replace("FALSE", "")
-		_line = _line.replace("1", "")
-		_line = _line.replace("0", "")
-		_line = _line.replace("+", ",")
-		_line = _line.replace("*", ",")
-
-		new_props = _line.split(",")
-		new_props = list(filter(None, new_props))
-		for prop in new_props: 
-			new = Symbol(prop)
-			#_new = Symbol("_" + prop)
-			propositions.add(new)
-			#propositions.add(_new)
+			continue
+		print(line)
+		add_proposition(line, propositions)
 	return propositions
+
+def add_proposition(line, propositions): 
+	_line = re.sub(r'\s+', '', line)
+	_line = _line.replace(".", ",")
+	_line = _line.replace("&", ",")
+	_line = _line.replace(";", ",")
+	_line = _line.replace("->", ",")
+	_line = _line.replace("=>", ",")
+	_line = _line.replace("~", "")
+	_line = _line.replace("!", "")
+	_line = _line.replace(":-", ",")
+	_line = _line.replace("::=", ",")
+	_line = _line.replace("(", "")
+	_line = _line.replace(")", "")
+	_line = _line.replace("not", "")
+	_line = _line.replace("TRUE", "")
+	_line = _line.replace("FALSE", "")
+	_line = _line.replace("1", "")
+	_line = _line.replace("0", "")
+	_line = _line.replace("+", ",")
+	_line = _line.replace("*", ",")
+	new_props = _line.split(",")
+	new_props = list(filter(None, new_props))
+	for prop in new_props: 
+		new = Symbol(prop)
+			#_new = Symbol("_" + prop)
+		propositions.add(new)
 
 def _mapping(propositions):
 	mapping = {}
@@ -158,8 +113,7 @@ def _mapping(propositions):
 			mapping[p] = corra
 	return mapping
 
-
-def construct_programA(file):
+def construct_program(file, pro):
 	flag = False
 	rules = {}
 	count = 0
@@ -167,37 +121,48 @@ def construct_programA(file):
 	lines = (line for line in lines if line)
 	#print("Lines")
 	for line in lines:
-
-		if "SECOND" in line:
-			return rules
+		if pro == "A":
+			if "SECOND" in line:
+				return rules
+		if pro == "B":
+			if "SECOND" in line:
+				flag = True
+				continue
+			if flag == False:
+				continue
 		if line.startswith("#"):
 			continue
+		add_rule(line, rules)
+	return rules
+
+
+def add_rule(rule, rules):
+		count = len(rules.keys())
+		head = ""
 		pos_body = []
 		neg_body = []
 		name = "r" + str(count)
-		_line = re.sub(r'\s+', '', line)	
+		_line = re.sub(r'\s+', '', rule)	
 		_line = _line.strip()
-		if _line.startswith(":-") or _line.startswith(str(FALSE)) or _line.startswith("0"):
-		#print("Starts with :-")
-			head = ""
-			if _line.startswith(str(FALSE)):
+		
+		if ":-" not in _line and "::=" not in _line:
+			_line = _line.replace(".", "")
+			head = _line
+		if _line.startswith(":-") or _line.startswith("FALSE") or _line.startswith("0") or _line.startswith("::="):
+			if _line.startswith("FALSE"):
 				head = "FALSE"
 			if _line.startswith("0"):
 				head = "0"
 			body = _line.replace(":-", "")
+			body = body.replace("::=", "")
 			body = body.replace("FALSE", "")
 			body = body.replace("0", "")
+			#print("Line: %s" % (body))
 			if "." not in body:
 				if body.startswith("not"):
 					neg_body.append(body)
-					new = Rule(name, _line, "", pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
 				else:
 					pos_body.append(body)
-					new = Rule(name, _line, head, pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
 			else:
 				body = div[1].split(".")
 				for b in body:
@@ -205,39 +170,29 @@ def construct_programA(file):
 						neg_body.append(b)
 					else:
 						pos_body.append(b)
-				new = Rule(name, _line, "", pos_body, neg_body)
-				rules.update({name: new})
-				count += 1
-		elif _line.endswith(":-") or _line.endswith(str(TRUE)) or _line.endswith("1"):
+		if _line.endswith(":-") or _line.endswith("TRUE") or _line.endswith("1") or _line.endswith("::="):
 			head = _line.replace(":-", "")
+			head = head.replace("::=", "")
 			head = head.replace("TRUE", "")
 			head = head.replace("1", "")
-			pos_body = ""
-			if _line.endswith(str(TRUE)):
+			if head.endswith("TRUE"):
 				pos_body = "TRUE"
-			if _line.endswith("1"):
+			if head.endswith("1"):
 				pos_body = "1"
-			new = Rule(name, _line, head, pos_body, "")
-			rules.update({name: new})
-			count += 1
-
 		else:
-			#print("_Line: %s" % (_line))
-			div = _line.split(":-")
+			if ":-" in _line:
+				div = _line.split(":-")
+			if "::=" in _line:
+				div = _line.split("::=")
 			head = div[0]
+			#print("head: %s" % (head))
 			if "." not in div[1]:
 				#print("No . in body")
 				if div[1].startswith("not"):
 				#	print("starts with not")
 					neg_body.append(div[1])
 				else:
-				#	print("does not start with not")
-				#	print("WTF is div1[1]???? %s" % (div[1]))
 					pos_body.append(div[1])
-				name = "r" + str(count)
-				new = Rule(name, line, head, pos_body, neg_body)
-				rules.update({name: new})
-				count += 1
 			else:
 				#print("Has . in body")
 				body = div[1].split(".")
@@ -246,106 +201,9 @@ def construct_programA(file):
 						neg_body.append(b)
 					else:
 						pos_body.append(b)
-				name = "r" + str(count)
-				new = Rule(name, line, head, pos_body, neg_body)
-				rules.update({name: new})
-				count += 1
-	return rules
-
-
-def construct_programB(file):
-	print("ProgramB")
-	rules = {}
-	count = 0
-	flag = False
-	lines = (line.rstrip() for line in file) # All lines including the blank ones
-	lines = (line for line in lines if line)
-	for line in lines:
-		
-		if "SECOND" in line:
-			flag = True
-		if flag == False:
-			continue
-		else:
-			print("Begin--")
-			print(line)
-			if line.startswith("#") or "SECOND" in line:
-				continue
-			pos_body = []
-			neg_body = []
-			name = "r" + str(count)
-			_line = re.sub(r'\s+', '', line)	
-			_line = _line.strip()
-			if _line.startswith(":-") or _line.startswith(str(FALSE)):
-				print("Starts with :- or FALSE")
-				head = ""
-				if _line.startswith(str(FALSE)):
-					head = "FALSE"
-				body = _line.replace(":-", "")
-				body = body.replace("FALSE", "")
-				if "." not in body:
-					if body.startswith("not"):
-						neg_body.append(body)
-						new = Rule(name, _line, head, pos_body, neg_body)
-						rules.update({name: new})
-						count += 1
-					else:
-						pos_body.append(body)
-						new = Rule(name, _line, "", pos_body, neg_body)
-						rules.update({name: new})
-						count += 1
-				else:
-					body = div[1].split(".")
-					for b in body:
-						if b.startswith("not"):
-							neg_body.append(b)
-						else:
-							pos_body.append(b)
-					new = Rule(name, _line, "", pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
-			elif _line.endswith(":-") or _line.endswith(str(TRUE)):
-				head = _line.replace(":-", "")
-				head = head.replace("TRUE", "")
-				pos_body = ""
-				if _line.endswith(str(TRUE)):
-					pos_body = "TRUE"
-				new = Rule(name, _line, head, pos_body, "")
-				rules.update({name: new})
-				count += 1
-
-			else:
-				print("_Line: %s" % (_line))
-				div = _line.split(":-")
-				head = div[0]
-				if "." not in div[1]:
-					print("No . in body")
-					if div[1].startswith("not"):
-						print("starts with not")
-						neg_body.append(div[1])
-					else:
-						print("does not start with not")
-						pos_body.append(div[1])
-					print("DO WE GET HERE?????????????")
-					print(line)
-					print(neg_body)
-					name = "r" + str(count)
-					new = Rule(name, line, head, pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
-				else:
-					print("Has . in body")
-					body = div1[1].split(".")
-					for b in body:
-						if b.startswith("not"):
-							neg_body.append(b)
-						else:
-							pos_body.append(b)
-					name = "r" + str(count)
-					new = Rule(name, line, head, pos_body, neg_body)
-					rules.update({name: new})
-					count += 1
-	return rules
+		name = "r" + str(count)
+		new = Rule(name, rule, head, pos_body, neg_body)
+		rules.update({name: new})
 
 def formula_translation(rules):
 	formulas = []
@@ -365,30 +223,27 @@ def formula_translation(rules):
 			pante = str(rule.pos_body[0]).replace("not", "~")
 			pante = pante.replace("!", "~")
 			pante = pante.replace(";", "|")
-			print("1: %s" % (pante))
 			pante = pante.replace("+", "|")
 			pante = pante.replace(",", "&")
 			pante = pante.replace("*", "&")
 			if "->" in pante:
 				imp = pante.split("->")
 				pante = "~" + imp[0] + "|" + imp[1]
-			print("2: %s" % (pante))
 			if "=>" in pante:
 				imp = pante.split("=>")
 				pante = "~" + imp[0] + "|" + imp[1]
 			for char in pante:
 				char = Symbol(char)
-			print("3: %s" % (pante))
+			#print("3: %s" % (pante))
 			pante = simplify(pante)
 			if len(rule.pos_body) > 1:
-				print("WTF is the len? %s" % (len(rule.pos_body)))
 				count = 1
 				while count < len(rule.pos_body):
-					print(count)
+					#print(count)
 					add = str(rule.pos_body[count]).replace("not", "~")
 					add = add.replace("!", "~")
 					add = add.replace(";", "|")
-					print("2: %s" % (add) )
+					#print("2: %s" % (add) )
 					add = add.replace("+", "|")
 					add = add.replace(",", "&")
 					add = add.replace("*", "&")
@@ -483,40 +338,16 @@ def rule_compliment(rules, propositions):
 			if str(p).startswith("_"):
 				continue
 			elif str(p) in temp:
-				print("Before %s " % (temp))
 				ex = "_" + str(p)
-				print(ex)
+				#print(ex)
 				temp = temp.replace(str(p), ex)
-				print("After1 *****************: %s" % (temp))
 				temp = temp.replace("~" + ex, "~" + str(p))
 				temp = temp.replace("not" + ex, "not" + str(p))
 				temp = temp.replace("!" + ex, "!" + str(p))
-				print("After2: %s" % (temp))
 		crules.append(temp)
 	return crules
 
 
-def construct_worlds(propositions):
-	_op = []
-	for p in propositions:
-		_op.append(str(p))
-	_op.sort()
-	op = []
-	for o in _op:
-		new = Symbol(o)
-		op.append(new)
-	num_worlds = list(range(2**len(propositions)))	#calculates number of rows in the table from which the worlds will be obtained
-	world_names = ["w" + str(i) for i in num_worlds]	#creates a unique name for each world: "w" plus an integer
-	n = len(propositions)								#number of propositions for table creation
-	table = list(product([False, True], repeat=n))		#creation of a truth table
-	worlds = {}											#initiates an empty list of worlds
-	count = 0
-	for row in table:
-		world = dict(zip(op, row))
-		name = world_names[count]			#each state is a dictionary associating a truth value with each propositional
-		worlds[name] = world							#the new world is added to the list of worlds
-		count +=1
-	return worlds
 
 def get_com_org_imp(propositions):
 	comIorg = []
@@ -574,3 +405,125 @@ def get_se_model(model):
 			return se_model 
 
 
+def create_txt_single(model):
+	text_name = "temp-file1324.txt" 
+	save = open(text_name, 'a+')
+	save.write("\n")
+	save.write("__________________________________________________ ")
+	save.write("SE Models")
+	save.write("__________________________________________________ \n \n")
+	for m in model:
+		save.write("< %s, %s >" % (m.X, m.Y))
+	save.write("\n")
+	save.write("__________________________________________________ \n \n")
+	save.close()
+	return save 
+
+def create_txt_double(modelA, modelB):
+	text_name = "temp-file1324.txt" 
+	save = open(text_name, 'a+')
+	save.write("\n")
+	save.write("__________________________________________________ ")
+	save.write("SE Models")
+	save.write("__________________________________________________ \n \n")
+	save.write("Program A:")
+	save.write("\n")
+	for m in modelA:
+		save.write("< %s, %s >" % (m.X, m.Y))
+	save.write("\n")
+	save.write("Program B:")
+	save.write("__________________________________________________ \n \n")
+	save.write("\n")
+	for m in modelB:
+		save.write("< %s, %s >" % (m.X, m.Y))
+	save.write("\n")
+	save.write("__________________________________________________ \n \n")
+	return save
+
+def print_models(data):
+	#print("Which printer would you like to use?")
+	#printers = win32print.EnumPrinters(5)
+	#for p in printers:
+	#	print(p)
+	#printer_name = input()
+
+	data = open("temp-file1324.txt", "rb").read () + b"\x0c"
+	
+	printer_name = win32print.GetDefaultPrinter()
+	printer = win32print.OpenPrinter (printer_name)
+	try:
+		job = win32print.StartDocPrinter(printer, 1, ("test of raw data", None, "RAW"))
+		try:
+			win32print.StartPagePrinter (printer)
+			win32print.WritePrinter (printer, data)
+			win32print.EndPagePrinter (printer)
+		finally:
+			win32print.EndDocPrinter (printer)
+	finally:
+		win32print.ClosePrinter (printer)
+
+
+def results(modelA, modelB):
+
+	print("\n")
+	print("----------------------------------------------------------------------------------")
+	print(" A Models:")
+	print("----------------------------------------------------------------------------------")
+	for m in modelA:
+		print("< %s, %s >" % (m.X, m.Y))
+	print("\n")
+	print("----------------------------------------------------------------------------------")
+	print(" B Models:")
+	print("----------------------------------------------------------------------------------")
+	for m in modelB:
+		print("< %s, %s >" % (m.X, m.Y))
+	print("\n")
+
+	se_modelA = get_se_model(modelA)
+	se_modelB = get_se_model(modelB)
+
+
+	if se_modelA == se_modelB:
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		print("The the programs are strongly equivalent")
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+	elif se_modelB.issubset(se_modelA):
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		print("The second program entails the first")
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	elif se_modelA.issubset(se_modelB):
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		print("The first program entails the second")
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	
+	else:
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		print("The programs are not strongly equivalent and it is not the case that one entails the other")
+		print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	print("\n")
+
+
+
+def augment_programA(augment, file):
+	with open(file, "r+") as f:
+		f.seek(0, 0)
+		f.write(augment)
+		f.close
+
+def augment_programB(augment, file):
+	file = open(file, "a+")
+	file.write(augment)
+	file.close()
+
+def get_rule_name_from_item(item, rules):
+	name = ""
+	for k, v in rules.items():
+		temp = re.sub(r'\s+', '', v.item)
+		temp = temp.strip
+		if item == temp:
+			name = k
+	return k
+
+
+		
