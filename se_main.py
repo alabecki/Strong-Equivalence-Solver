@@ -160,7 +160,11 @@ while(True):
 		file = res[0]
 		file_name = res[1]
 		file.seek(0)
-		propositions = obtain_atomic_formulas(file, "A")
+		propositions = obtain_atomic_formulas(file)
+		print("Propositions A:")
+		for p in propositions:
+			print (p)
+
 		file.seek(0)
 		rulesA = construct_program(file, "A")		# parses input text, make a Rule object for each rule, saves objects in dictionary
 		file.seek(0)
@@ -169,7 +173,7 @@ while(True):
 		for r in rulesA.values():
 			print (r.name, r.item)
 		file.seek(0)
-		propositions = obtain_atomic_formulas(file, "B")
+		#propositions = obtain_atomic_formulas(file, "B")
 		print("propositions B")
 		for p in propositions:
 			print(propositions)

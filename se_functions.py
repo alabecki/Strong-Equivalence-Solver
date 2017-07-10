@@ -22,7 +22,7 @@ from se_classes import*
 
 
 
-def initialize(rules, propositions, pro):
+def initialize(rules, propositions, pro):   # Calls a sequence of functions that calculate the SE models 
 		formulas = formula_translation(rules)
 		#print("Formulas __________________________________________________________")
 		#for f in formulas:
@@ -44,7 +44,7 @@ def initialize(rules, propositions, pro):
 		return model
 
 
-def get_file():
+def get_file():				
 	while True:
 		file_name = input("Please input the name of a text-file containing a set of rules \n")
 		file_name = file_name + ".txt"
@@ -56,27 +56,18 @@ def get_file():
 		else:
 			print("The file you selected does not exist, please try again\n")
 
-def obtain_atomic_formulas(file, X):
+def obtain_atomic_formulas(file):				#Scans through the input file collecting distinct atomic formulas 
 	propositions = set()
 	lines = (line.rstrip() for line in file)
 	lines = (line for line in lines if line)
 	flag = False
 	for line in lines:
-		if X == "B":
-			if "SECOND" in line:
-				flag = True
-			if flag == False:
-				continue
-		if X == "A":
-			if "SECOND" in line:
-				return propositions
 		if line.startswith("#") or "SECOND" in line:
 			continue
-		print(line)
 		add_proposition(line, propositions)
 	return propositions
 
-def add_proposition(line, propositions): 
+def add_proposition(line, propositions): 				#Add atomic formulas when new rule is added
 	_line = re.sub(r'\s+', '', line)
 	_line = _line.replace(".", ",")
 	_line = _line.replace("&", ",")
@@ -113,7 +104,8 @@ def _mapping(propositions):
 			mapping[p] = corra
 	return mapping
 
-def construct_program(file, pro):
+def construct_program(file, pro):					# Scans through the input file parsing out individual rules and their \
+														#components 
 	flag = False
 	rules = {}
 	count = 0
@@ -136,7 +128,7 @@ def construct_program(file, pro):
 	return rules
 
 
-def add_rule(rule, rules):
+def add_rule(rule, rules):					# Adds a rule to an existing program or one that is under construction 
 		count = len(rules.keys())
 		head = ""
 		pos_body = []
@@ -205,8 +197,8 @@ def add_rule(rule, rules):
 		new = Rule(name, rule, head, pos_body, neg_body)
 		rules.update({name: new})
 
-def formula_translation(rules):
-	formulas = []
+def formula_translation(rules):				#Translates rules into propositional logic formulas using "&" for AND,
+	formulas = []							# "|" for OR and "~" for NOT
 	for r, rule in rules.items():
 		pante = ""
 		nante = ""
@@ -321,16 +313,15 @@ def formula_translation(rules):
 			f = Or(ante, con)
 			formulas.append(f)
 		else:
-	#		print("**********************************************************************")
 			ant = Not(ante)
 			#print(ante)
 			formulas.append(ant)
 	return formulas
 
-def rule_compliment(rules, propositions):
-	crules = []
-	for r, rule in rules.items():
-		new = ""
+def rule_compliment(rules, propositions):	#Each rule is given a "compliment" with propositions that correspond
+	crules = []								# to those given in the original program. For each p the correspondent
+	for r, rule in rules.items():			# is _p. The resulting compliment formulas are needed to calculate
+		new = ""							# the SE models
 		_temp = str(rule.item)
 		temp = re.sub(r'\s+', '', _temp)
 		temp = temp.strip('')
@@ -349,7 +340,7 @@ def rule_compliment(rules, propositions):
 
 
 
-def get_com_org_imp(propositions):
+def get_com_org_imp(propositions):		#For each proposition p we introduce _p -> p 
 	comIorg = []
 	for p in propositions:
 		if "_" not in str(p):
@@ -360,20 +351,20 @@ def get_com_org_imp(propositions):
 			comIorg.append(temp)
 	return comIorg
 
-def create_condition(formulas, _formulas, comIorg):
-	conditions = comIorg[0]
-	for f in formulas:
-		conditions = And(f, conditions)
+def create_condition(formulas, _formulas, comIorg): #The condition is comprised of (1) each formula derived from the 
+	conditions = comIorg[0]							# program, (2) the "compliments" of those rules, and (3) each 
+	for f in formulas:								# _p -> p formula. Every interpretation that satisfies this 
+		conditions = And(f, conditions)				# condition will be a model.
 	for _f in _formulas:
 		conditions = And(_f, conditions)
 	for cio in comIorg:
 		conditions = And(cio, conditions)
 	return conditions
 
-def get_Models(listYY):
-	models = set()
-	count = 0
-	if len(listYY) == 1 and listYY[0] == False:
+def get_Models(listYY):							# The (X, Y) models are derived from the output of the previous function.
+	models = set()								# Y values are directly from those values. The X values are obtained
+	count = 0									# as follows: when _p is true in an Y model, p is also true. Since  
+	if len(listYY) == 1 and listYY[0] == False:	# _p -> p, we know that X will be a subset of Y.
 		return models
 	else:
 		for state in listYY:
@@ -397,7 +388,7 @@ def get_Models(listYY):
 			count += 1
 		return models
 
-def get_se_model(model):
+def get_se_model(model):					#Gathers up the se_models as a set of sets 
 			se_model = set()
 			for m in model:
 				item = frozenset(m.XY)
@@ -405,7 +396,7 @@ def get_se_model(model):
 			return se_model 
 
 
-def create_txt_single(model):
+def create_txt_single(model):			 #	Creates text file of SE models of a single program		
 	print("Please provide a name for the new file\n")
 	text_name = input()
 	text_name = text_name + ".txt"
@@ -423,7 +414,7 @@ def create_txt_single(model):
 	save.close()
 	return save 
 
-def create_txt_double(modelA, modelB):
+def create_txt_double(modelA, modelB):  # Creates text file of SE models from two program files
 	print("Please provide a name for the new file\n")
 	text_name = input()
 	text_name = text_name + ".txt"
@@ -472,7 +463,7 @@ def create_txt_double(modelA, modelB):
 #		win32print.ClosePrinter (printer)
 
 
-def results(modelA, modelB):
+def results(modelA, modelB):		# Prints results to user on the command line
 
 	print("\n")
 	print("----------------------------------------------------------------------------------")
@@ -514,18 +505,18 @@ def results(modelA, modelB):
 
 
 
-def augment_programA(augment, file):
+def augment_programA(augment, file):		#Add rule to the first (or only) program
 	with open(file, "r+") as f:
 		f.seek(0, 0)
 		f.write(augment)
 		f.close
 
-def augment_programB(augment, file):
+def augment_programB(augment, file):		#Add a rule to the second program
 	file = open(file, "a+")
 	file.write(augment)
 	file.close()
 
-def get_rule_name_from_item(item, rules):
+def get_rule_name_from_item(item, rules):		# Auxiliary function
 	name = ""
 	for k, v in rules.items():
 		temp = re.sub(r'\s+', '', v.item)
