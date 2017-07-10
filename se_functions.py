@@ -72,6 +72,7 @@ def add_proposition(line, propositions): 				#Add atomic formulas when new rule 
 	_line = _line.replace(".", ",")
 	_line = _line.replace("&", ",")
 	_line = _line.replace(";", ",")
+	_line = _line.replace("|", ",")
 	_line = _line.replace("->", ",")
 	_line = _line.replace("=>", ",")
 	_line = _line.replace("~", "")
@@ -140,7 +141,7 @@ def add_rule(rule, rules):					# Adds a rule to an existing program or one that 
 		if ":-" not in _line and "::=" not in _line:
 			_line = _line.replace(".", "")
 			head = _line
-		if _line.startswith(":-") or _line.startswith("FALSE") or _line.startswith("0") or _line.startswith("::="):
+		elif _line.startswith(":-") or _line.startswith("FALSE") or _line.startswith("0") or _line.startswith("::="):
 			if _line.startswith("FALSE"):
 				head = "FALSE"
 			if _line.startswith("0"):
@@ -162,7 +163,7 @@ def add_rule(rule, rules):					# Adds a rule to an existing program or one that 
 						neg_body.append(b)
 					else:
 						pos_body.append(b)
-		if _line.endswith(":-") or _line.endswith("TRUE") or _line.endswith("1") or _line.endswith("::="):
+		elif _line.endswith(":-") or _line.endswith("TRUE") or _line.endswith("1") or _line.endswith("::="):
 			head = _line.replace(":-", "")
 			head = head.replace("::=", "")
 			head = head.replace("TRUE", "")
