@@ -1,5 +1,5 @@
+_________________________________________________________________________
 SE Models Solver
-
 _________________________________________________________________________ 
  
 1. Installation
@@ -18,15 +18,25 @@ folder containing the program and type:
 (If you have Anaconda installed on your computer you need only type 
 “se_main.py”)
 
+ 
 The program makes use of the logic module from the sympy library, which 
 is itself dependent upon the pmath library. If these have not been 
 installed, the user will be informed when trying to run the program. 
 It is recommended that the user use pip when installing Python libraries.
 To install sympy and pmath using pip simply type:
 
-pip install sympy
-pip install pmath
+	pip install sympy
+	pip install pmath
 
+If you have both Python 2.x and 3.x installed on your system, your system Python 2.x 
+might be the default version, which will cause trouble both when trying to run the program 
+and when installing modules with pip for Python 3. 
+
+If this is the case, type the following into the command prompt: 
+	alias python='/usr/bin/python3'
+
+Then install sympy as follows:
+	python3.x -m pip install sympy  # specifically Python 3.x
 __________________________________________________________________________________________
 
 2. Introduction:

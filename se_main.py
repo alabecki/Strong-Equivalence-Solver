@@ -1,4 +1,4 @@
-
+#/usr/bin/python3
 
 from sympy import Symbol
 from sympy.abc import*
