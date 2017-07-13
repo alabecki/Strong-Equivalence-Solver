@@ -20,14 +20,18 @@ folder containing the program and type:
 
  
 The program makes use of the logic module from the sympy library, which 
-is itself dependent upon the pmath library, which is included in smypy. If these have not been installed, the user will be informed when trying to run the program.  It is recommended that the user use pip when installing Python libraries.
+is itself dependent upon the pmath library, which is included in smypy. 
+If these have not been installed, the user will be informed when trying 
+to run the program.  It is recommended that the user use pip when 
+installing Python libraries.
 
 To install sympy and pmath using pip simply type:
 
 	pip install sympy
 
 If you have both Python 2.x and 3.x installed on your system, python 2.x 
-might be the default version, which will cause trouble both when trying to run the program and when installing modules with pip for Python 3. 
+might be the default version, which will cause trouble both when trying 
+to run the program and when installing modules with pip for Python 3. 
 
 If this is the case, type the following into the command prompt:
  
@@ -41,7 +45,13 @@ _________________________________________________________________________
 
 2. Introduction:
 
-The program reads text files with logic programs. When reading a file with only one logic program, it will return the set of strong equivalence (SE) models for that program. The algorithm used to determine the SE of a program was first presented in F. Lin (2002) and H. Turner (2003).When reading a file with two logic programs, it will return the SE models for each program and indicate whether or not the two programs are equivalent or if one program entails the other.
+The program reads text files with logic programs. When reading a file with
+only one logic program, it will return the set of strong equivalence (SE)
+models for that program. The algorithm used to determine the SE of a program
+was first presented in F. Lin (2002) and H. Turner (2003).When reading a 
+file with two logic programs, it will return the SE models for each program
+and indicate whether or not the two programs are equivalent or if one program
+entails the other.
 
 _________________________________________________________________________
 
@@ -52,7 +62,8 @@ Each rule has the following format:
 	or
 	a ::= b
 
-Where "a" is a disjunction of atomic propositions and "b" is a set of propositional formulas with negation as failure instead of classical negation.
+Where "a" is a disjunction of atomic propositions and "b" is a set of 
+propositional formulas with negation as failure instead of classical negation.
 
 The following symbols may be used for Boolean connectives:
 
@@ -65,9 +76,11 @@ In addition to Boolean connectives, there is:
 {"TRUE", "1"} for TRUE
 {"FALSE", "0"} for FALSE
 
-Members of b are separated with periods "." (although, one can just as easily make b a single conjunctive formula)
+Members of b are separated with periods "." (although, one can just as 
+easily make b a single conjunctive formula)
 
-It is necessary to have a line with "SECOND" between the two programs so that the program knows where the first programs ends and where the second begins.
+It is necessary to have a line with "SECOND" between the two programs 
+so that the program knows where the first programs ends and where the second begins.
 
 All lines not including rules should begin with #
 
@@ -85,10 +98,16 @@ _________________________________________________________________________
 
 4. Functions
 
-After opening the program the user will be prompted to enter the name of a program file. There are two choices here depending on whether the file contains one or two programs. 
+After opening the program the user will be prompted to enter the name of a 
+program file. There are two choices here depending on whether the file contains
+one or two programs. 
 
-Upon receiving a single program file, the program will return the set of SE models for that program.
-Upon receiving a double program file, the program will return the SE models of both programs and tell the user how the two are related. The programs may be strongly equivalent or one might entail the other, or no such relations might obtain. 
+Upon receiving a single program file, the program will return the set of SE 
+models for that program.
+Upon receiving a double program file, the program will return the SE models
+of both programs and tell the user how the two are related. The programs may
+be strongly equivalent or one might entail the other, or no such relations might
+obtain. 
 
 The user then has one of three additional choices:
 
@@ -102,6 +121,8 @@ _________________________________________________________________________
 References
 
 
-Hudson Turner. 2003. Strong equivalence made easy: nested expressions and weight constraints. Theory Pract. Log. Program. 3, 4 (July 2003), 609-622. 
+Hudson Turner. 2003. Strong equivalence made easy: nested expressions and weight
+constraints. Theory Pract. Log. Program. 3, 4 (July 2003), 609-622. 
 
-Lin, F. 2002. Reducing strong equivalence of logic programs to entailment in classical logic. In Proc. of KR’02. 170–176.
+Lin, F. 2002. Reducing strong equivalence of logic programs to entailment in
+classical logic. In Proc. of KR’02. 170–176.
