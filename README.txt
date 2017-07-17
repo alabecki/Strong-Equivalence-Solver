@@ -3,12 +3,10 @@ SE Models Solver
 _________________________________________________________________________ 
  
 1. Installation
-
-To run the program, a computer must have Python 3.x installed.
-The program was written on Python 3.6 but may run correctly on older 
-versions. It is recommended that the user should be using 3.4 or higher.
-The program can be opened in on the command-line in Windows or Linux
-machine. 
+To run the program, a computer must have Python 3.x installed. The program 
+was written on Python 3.6 but may run correctly on older versions. Version 
+3.4 or higher, however, is recommended. The program can be opened in on the 
+command-line in Windows or Linux machines. 
 
 In the command line, go to the directory in which you have placed the 
 folder containing the program and type:
@@ -16,30 +14,42 @@ folder containing the program and type:
 	python se_main.py
 
 (If you have Anaconda installed on your computer you need only type 
-“se_main.py”)
+“z_main.py”)
 
- 
-The program makes use of the logic module from the sympy library, which 
-is itself dependent upon the pmath library, which is included in smypy. 
-If these have not been installed, the user will be informed when trying 
-to run the program.  It is recommended that the user use pip when 
-installing Python libraries.
+The program makes use of the logic module from the sympy library. It is 
+recommended that the user employ pip when installing Python libraries. To 
+install sympy simply type:
 
-To install sympy and pmath using pip simply type:
+       pip install sympy	(perhaps with a “sudo”)
 
-	pip install sympy
 
-If you have both Python 2.x and 3.x installed on your system, python 2.x 
-might be the default version, which will cause trouble both when trying 
-to run the program and when installing modules with pip for Python 3. 
+If you have both Python 2.x and 3.x installed on your system, it might 
+run Python 2.x by default, which will cause trouble both when trying to 
+run the program and when installing modules. 
 
-If this is the case, type the following into the command prompt:
- 
-	alias python='/usr/bin/python3'
+If this is the case, type the following into the command prompt: 
+	
+	alias python='/usr/bin/python3'   (Linex)
+	
+	alias python='python3'		  (Mac)
 
-Then install sympy as follows:	
-
+Then install sympy as follows:
+	
 	python3.x -m pip install sympy
+
+This second way of installing sympy may be necessary even if you already
+have python 3 active.
+
+If you have trouble installing through pip, please try using Easy Install:
+
+	easy_install sympy		(perhaps with sudo prefixed)
+
+This second way of installing sympy may be necessary even if you already
+have python 3 active.
+
+If none of these methods of installing sympy work see:
+
+http://docs.sympy.org/latest/install.html
 
 _________________________________________________________________________
 
