@@ -1,0 +1,19 @@
+## stuff
+
+a ::= b,c.
+::= a & b.
+b;c.
+
+
+SECOND
+
+a; b :- . 
+
+c :- b|d.
+
+a+b ::= c*d.
+
+
+ 
+
+

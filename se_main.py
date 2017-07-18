@@ -53,8 +53,6 @@ print("_________________________________________________________________________
 print ("==================================================================================== \n")
 
 
-FALSE = Symbol("FALSE")
-TRUE = Symbol("TRUE")
 
 while(True):
 	do = ""
@@ -70,7 +68,7 @@ while(True):
 		file = res[0]
 		file_name = res[1]
 		file.seek(0)
-		propositions = obtain_atomic_formulas(file, "A")
+		propositions = obtain_atomic_formulas(file)
 		file.seek(0)
 		rules = construct_program(file, "A")		# parses input text, make a Rule object for each rule, saves objects in dictionary
 		file.seek(0)
@@ -83,7 +81,12 @@ while(True):
 		print("----------------------------------------------------------------------------------")
 		print("Models")
 		print("----------------------------------------------------------------------------------")
+		rep = "{"+"}"
 		for m in model:
+			if str(m.X) == "set()":
+				m.X = rep
+			if str(m.Y) == "set()":
+				m.Y = rep
 			print("< %s, %s >" % (m.X, m.Y))
 		print("\n")
 		file.close()

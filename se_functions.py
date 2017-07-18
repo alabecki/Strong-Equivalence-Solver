@@ -47,7 +47,8 @@ def initialize(rules, propositions, pro):   # Calls a sequence of functions that
 def get_file():				
 	while True:
 		file_name = input("Please input the name of a text-file containing a set of rules \n")
-		file_name = file_name + ".txt"
+		if file_name.endswith(".txt") == False:
+			file_name = file_name + ".txt"
 		if(os.path.exists(file_name)):
 			_file = open(file_name, "r+")
 			print("Name of file: %s \n" % (file_name))
@@ -55,6 +56,11 @@ def get_file():
 			return res
 		else:
 			print("The file you selected does not exist, please try again\n")
+			print("(Or press 'r' to return) \n ")
+			name = input()
+			if name == 'r':
+				res = []
+				return res
 
 def obtain_atomic_formulas(file):				#Scans through the input file collecting distinct atomic formulas 
 	propositions = set()
@@ -137,6 +143,7 @@ def add_rule(rule, rules):					# Adds a rule to an existing program or one that 
 		name = "r" + str(count)
 		_line = re.sub(r'\s+', '', rule)	
 		_line = _line.strip()
+		_line = _line.replace(".", "")
 		
 		if ":-" not in _line and "::=" not in _line:
 			_line = _line.replace(".", "")
@@ -470,13 +477,22 @@ def results(modelA, modelB):		# Prints results to user on the command line
 	print("----------------------------------------------------------------------------------")
 	print(" A Models:")
 	print("----------------------------------------------------------------------------------")
+	rep = "{"+"}"
 	for m in modelA:
+		if str(m.X) == "set()":
+			m.X = rep
+		if str(m.Y) == "set()":
+			m.Y = rep
 		print("< %s, %s >" % (m.X, m.Y))
 	print("\n")
 	print("----------------------------------------------------------------------------------")
 	print(" B Models:")
 	print("----------------------------------------------------------------------------------")
 	for m in modelB:
+		if str(m.X) == "set()":
+			m.X = rep
+		if str(m.Y) == "set()":
+			m.Y = rep
 		print("< %s, %s >" % (m.X, m.Y))
 	print("\n")
 

@@ -1,0 +1,14 @@
+q :- not p.
+p :- not q.
+r :- p , q.
+s :- p.
+s :- q.
+
+SECOND
+
+q :- not p.
+p :- not q.
+r :- p , q.
+s :- p.
+s :- q.
+s :- not r.
