@@ -3,6 +3,7 @@ SE Models Solver
 _________________________________________________________________________ 
  
 1. Installation
+
 To run the program, a computer must have Python 3.x installed. The program 
 was written on Python 3.6 but may run correctly on older versions. Version 
 3.4 or higher, however, is recommended. The program can be opened in on the 
@@ -13,15 +14,23 @@ folder containing the program and type:
 
 	python se_main.py
 
-(If you have Anaconda installed on your computer you need only type 
-“z_main.py”)
+If you have Anaconda installed on your computer you need only type 
+“z_main.py”. If you also have Python 2 installed on your computer, you may need to write “python3.x” rather than “python”.
+
+You can also redirect files to the program on the command line and it will 
+immediately output the models:
+
+	python se_main.py < text.txt
+
+Using this method, the output can also be directly fed to another python program:
+
+	python se_main.py < test.txt | receiver.py 
 
 The program makes use of the logic module from the sympy library. It is 
 recommended that the user employ pip when installing Python libraries. To 
 install sympy simply type:
 
        pip install sympy	(perhaps with a “sudo”)
-
 
 If you have both Python 2.x and 3.x installed on your system, it might 
 run Python 2.x by default, which will cause trouble both when trying to 
@@ -31,7 +40,7 @@ If this is the case, type the following into the command prompt:
 	
 	alias python='/usr/bin/python3'   (Linex)
 	
-	alias python='python3'		  (Mac)
+	alias python='python3'			  (Mac)
 
 Then install sympy as follows:
 	
@@ -55,13 +64,8 @@ _________________________________________________________________________
 
 2. Introduction:
 
-The program reads text files with logic programs. When reading a file with
-only one logic program, it will return the set of strong equivalence (SE)
-models for that program. The algorithm used to determine the SE of a program
-was first presented in F. Lin (2002) and H. Turner (2003).When reading a 
-file with two logic programs, it will return the SE models for each program
-and indicate whether or not the two programs are equivalent or if one program
-entails the other.
+The program reads text files with logic programs. When reading a file with only one logic program, it will return the set of strong equivalence (SE) models for that program. The algorithm used to determine the SE of a program was first presented in F. Lin (2002) and H. Turner (2003). When reading a file with two logic programs, it will return the SE models for each program and indicate whether the two programs are equivalent or if one program entails the other.
+
 
 _________________________________________________________________________
 

@@ -20,7 +20,7 @@ import os, sys
 
 from se_classes import*
 
-
+second = "SECOND"
 
 def initialize(rules, propositions, pro):   # Calls a sequence of functions that calculate the SE models 
 		formulas = formula_translation(rules)
@@ -68,7 +68,7 @@ def obtain_atomic_formulas(file):				#Scans through the input file collecting di
 	lines = (line for line in lines if line)
 	flag = False
 	for line in lines:
-		if line.startswith("#") or "SECOND" in line:
+		if line.startswith("#") or second in line:
 			continue
 		add_proposition(line, propositions)
 	return propositions
@@ -121,10 +121,10 @@ def construct_program(file, pro):					# Scans through the input file parsing out
 	#print("Lines")
 	for line in lines:
 		if pro == "A":
-			if "SECOND" in line:
+			if second in line:
 				return rules
 		if pro == "B":
-			if "SECOND" in line:
+			if second in line:
 				flag = True
 				continue
 			if flag == False:
