@@ -1,5 +1,23 @@
 #/usr/bin/python3
 
+#String Equivalence Model Solver
+
+#Copyright (c) 2017 Adam Labecki
+
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+
+#The above copyright notice and this permission notice shall be included in all
+#copies or substantial portions of the Software.
+
+#For further details see LICENSE  
+
+
+
 from sympy import Symbol
 from sympy.abc import*
 from sympy.logic.boolalg import to_cnf
@@ -150,7 +168,7 @@ else:
 				while (opt not in additionA.keys()):
 					opt = input()
 				if opt == "1":
-					save = create_txt_single(model)
+					save = create_txt_single(model, rules)
 					#print(save)
 				if opt == "2":
 					print("Please enter a new rule to add to the Program")
@@ -163,12 +181,17 @@ else:
 					print("\n")
 					add_proposition(new_rule, propositions)
 					#augment_programA(new_rule, res[1])
-					print("The %s has been added to the program" % (new_rule))
+					print("%s has been added to the program" % (new_rule))
 					print("Push 'enter' to get the new models:")
 					input()
 					#file = open(res[1], "r")
 					model = initialize(rules, propositions, "A")
+					rep = "{"+"}"
 					for m in model:
+						if str(m.X) == "set()":
+							m.X = rep
+						if str(m.Y) == "set()":
+							m.Y = rep
 						print("< %s, %s >" % (m.X, m.Y))
 					print("\n")
 
@@ -198,8 +221,13 @@ else:
 							#file = open(res[1], "r")
 							model = initialize(rules, propositions, "A")
 							for m in model:
+								if str(m.X) == "set()":
+									m.X = rep
+								if str(m.Y) == "set()":
+									m.Y = rep
 								print("< %s, %s >" % (m.X, m.Y))
-								flag = True
+							print("\n")
+							flag = True
 					if flag == False:
 						print("%s is not one of the rules in the program" % (drop))
 
@@ -254,7 +282,7 @@ else:
 				while (opt not in additionB.keys()):
 					opt = input()
 				if opt == "1":
-					save = create_txt_double(modelA, modelB)
+					save = create_txt_double(modelA, modelB, rulesA, rulesB)
 					#print_models(save)
 				if opt == "2":
 					print("Please enter a new rule to add to Program A")
@@ -267,7 +295,7 @@ else:
 					print("\n")
 					add_proposition(new_rule, propositions)
 					#augment_programA(new_rule, res[1])
-					print("The %s has been added to program A" % (new_rule))
+					print("%s has been added to program A" % (new_rule))
 					print("Push 'enter' to get the new models:")
 					input()
 					#file = open(res[1], "r")
@@ -285,7 +313,7 @@ else:
 					print("\n")
 					add_proposition(new_rule, propositions)
 					#augment_programA(new_rule, res[1])
-					print("The %s has been added to program B" % (new_rule))
+					print("%s has been added to program B" % (new_rule))
 					print("Push 'enter' to get the new models:")
 					input()
 					#file = open(res[1], "r")

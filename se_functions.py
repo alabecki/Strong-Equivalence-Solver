@@ -404,14 +404,16 @@ def get_se_model(model):					#Gathers up the se_models as a set of sets
 			return se_model 
 
 
-def create_txt_single(model):			 #	Creates text file of SE models of a single program		
+def create_txt_single(model, rules):			 #	Creates text file of SE models of a single program		
 	print("Please provide a name for the new file\n")
 	text_name = input()
 	text_name = text_name + ".txt"
 	save = open(text_name, 'a+')
 	save.write("\n")
 	save.write("__________________________________________________\n ")
-	save.write("SE Models \n")
+	save.write("SE Models for:\n")
+	for r, rule in rules.items():
+		save.write(r + " "  + rule.item + "\n")
 	save.write("__________________________________________________ \n \n")
 	for m in model:
 		save.write("< %s, %s > \n" % (m.X, m.Y))
@@ -422,7 +424,7 @@ def create_txt_single(model):			 #	Creates text file of SE models of a single pr
 	save.close()
 	return save 
 
-def create_txt_double(modelA, modelB):  # Creates text file of SE models from two program files
+def create_txt_double(modelA, modelB, rulesA, rulesB):  # Creates text file of SE models from two program files
 	print("Please provide a name for the new file\n")
 	text_name = input()
 	text_name = text_name + ".txt"
@@ -430,20 +432,29 @@ def create_txt_double(modelA, modelB):  # Creates text file of SE models from tw
 	save.write("\n")
 	save.write("__________________________________________________ \n")
 	save.write("SE Models \n")
-	save.write("__________________________________________________ \n \n")
-	save.write("Program A:")
-	save.write("\n")
+	save.write("__________________________________________________ \n")
+	save.write("Program A: \n")
+	for r, rule in rulesA.items():
+		save.write(r + " " + rule.item + "\n")
+	save.write("__________________________________________________ \n")
+	save.write("A Models:\n")
 	for m in modelA:
 		save.write("< %s, %s > \n" % (m.X, m.Y))
 	save.write("\n")
-	save.write("Program B:")
-	save.write("__________________________________________________ \n \n")
+	save.write("__________________________________________________ \n")
+
+	save.write("Program B:\n")
+	for r, rule in rulesB.items():
+		save.write(r + " " + rule.item + "\n")
+	save.write("__________________________________________________ \n")
+	save.write("B Models:\n")
+	save.write("__________________________________________________ \n")
 	save.write("\n")
 	for m in modelB:
 		save.write("< %s, %s > \n" % (m.X, m.Y))
 	save.write("\n")
 	print("\n")
-	save.write("__________________________________________________ \n \n")
+	save.write("__________________________________________________ \n")
 	print("%s has been written to disk\n" % (text_name))
 	save.close()
 	return save
