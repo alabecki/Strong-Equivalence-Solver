@@ -9,13 +9,17 @@ was written on Python 3.6 but may run correctly on older versions. Version
 3.4 or higher, however, is recommended. The program can be opened in on the 
 command-line in Windows or Linux machines. 
 
-In the command line, go to the directory in which you have placed the 
-folder containing the program and type:
+If Python 2 is not your default version of Python, go to the directory in which you have placed the 
+folder containing the program and type in the command line:
 
 	python se_main.py
 
 If you have Anaconda installed on your computer you need only type 
-“z_main.py”. If you also have Python 2 installed on your computer, you may need to write “python3.x” rather than “python”.
+“z_main.py”. 
+
+If you also have Python 2 installed on your computer and are using 
+Linus or OS, you may need to write “python3.x” rather than “python”
+
 
 You can also redirect files to the program on the command line and it will 
 immediately output the models:
@@ -43,11 +47,11 @@ If this is the case, type the following into the command prompt:
 	alias python='python3'			  (Mac)
 
 Then install sympy as follows:
-	
-	python3.x -m pip install sympy
 
-This second way of installing sympy may be necessary even if you already
-have python 3 active.
+	pip install sympy					(Windows)
+	
+	python3.x -m pip install sympy		(Linux, Mac)
+
 
 If you have trouble installing through pip, please try using Easy Install:
 

@@ -124,7 +124,7 @@ else:
 	while(True):
 		do = ""
 		while do not in commands.keys():
-			for k, v in commands.items():
+			for k, v in sorted(commands.items()):
 				print("%s: %s" % (k, v))
 			print("\n")
 			do = input()
@@ -132,6 +132,8 @@ else:
 			sys.exit()
 		if(do == "1"):
 			res = get_file()
+			if len(res) == 0:
+				continue
 			file = res[0]
 			file_name = res[1]
 			file.seek(0)
@@ -161,7 +163,7 @@ else:
 			more = True
 			while more == True:
 				print("Would you like to do anything else with this program?---------------------------")
-				for k, p in additionA.items():
+				for k, p in sorted(additionA.items()):
 					print("%s: %s" % (k, p))
 				print("\n")
 				opt = ""
@@ -197,7 +199,7 @@ else:
 
 				if opt == "3":
 					print("Which of the following rules would you like to remove from the Program?")
-					for k, v in rules.items():
+					for k, v in sorted(rules.items()):
 						print(v.item)
 					drop = input()
 					drop = re.sub(r'\s+', '', drop)	
@@ -214,7 +216,7 @@ else:
 							rules.pop(d)
 							print("%s has been removed from the program\n" % (drop))
 							print("Program Rules:")
-							for k, v in rules.items():
+							for k, v in sorted(rules.items()):
 								print(v.item)
 							print("Push 'enter' to get the new models:")
 							input()
@@ -253,11 +255,7 @@ else:
 			for r in rulesA.values():
 				print (r.name, r.item)
 			file.seek(0)
-			#propositions = obtain_atomic_formulas(file, "B")
-			#print("propositions B")
-			#for p in propositions:
-			#	print(propositions)
-			file.seek(0)
+		
 			rulesB = construct_program(file, "B")		# parses input text, make a Rule object for each rule, saves objects in dictionary
 			file.seek(0)
 			#print("number of rules: %s" % len(rules))
@@ -275,7 +273,7 @@ else:
 			more = True
 			while more == True:
 				print("Would you like to do anything else with these programs?-------------------------")
-				for k, p in additionB.items():
+				for k, p in sorted(additionB.items()):
 					print("%s: %s" % (k, p))
 				print("\n")
 				opt = ""
@@ -325,14 +323,14 @@ else:
 
 				if opt == "4":
 					print("Which of the following rules would you like to remove from Program A?")
-					for k, v in rulesA.items():
+					for k, v in sorted(rulesA.items()):
 						print(v.item)
 					drop = input()
 					drop = re.sub(r'\s+', '', drop)	
 					drop = drop.strip()
 					flag = False
 					dummy = deepcopy(rulesA)
-					for d, dum in dummy.items():
+					for d, dum in sorted(dummy.items()):
 						comp = re.sub(r'\s+', '', dum.item)
 						comp = comp.strip()
 						if drop == comp:
@@ -342,7 +340,7 @@ else:
 							#rulesA.pop(key)
 							print("%s has been removed from program A\n" % (drop))
 							print("Program A Rules:")
-							for k, v in rulesA.items():
+							for k, v in sorted(rulesA.items()):
 								print(v.item)
 							print("Push 'enter' to get the new models:")
 							input()
@@ -356,7 +354,7 @@ else:
 
 				if opt == "5":
 					print("Which of the following rules would you like to remove from Program B?")
-					for k, v in rulesB.items():
+					for k, v in sorted(rulesB.items()):
 						print(v.item)
 					drop = input()
 					drop = re.sub(r'\s+', '', drop)	
@@ -372,7 +370,7 @@ else:
 							#rulesB.pop(key)
 							print("%s has been removed from program B\n" % (drop))
 							print("Program B Rules:")
-							for k, v in rulesB.items():
+							for k, v in sorted(rulesB.items()):
 								print(v.item)
 							print("Push 'enter' to get the new models:")
 							input()

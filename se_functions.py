@@ -24,15 +24,11 @@ second = "SECOND"
 
 def initialize(rules, propositions, pro):   # Calls a sequence of functions that calculate the SE models 
 		formulas = formula_translation(rules)
-		#print("Formulas __________________________________________________________")
-		#for f in formulas:
-		#	print(f)
+	
 		crules = rule_compliment(rules, propositions)
 		_rules = construct_program(crules, "A")
 		_formulas= formula_translation(_rules)
-		#print("_Formulas___________________________________________________________")
-		#for f in _formulas:
-		#	print(f)
+		
 		comIorg = get_com_org_imp(propositions)
 		condition = create_condition(formulas, _formulas, comIorg)
 		#print("condition______________________________________________________________")
@@ -412,7 +408,7 @@ def create_txt_single(model, rules):			 #	Creates text file of SE models of a si
 	save.write("\n")
 	save.write("__________________________________________________\n ")
 	save.write("SE Models for:\n")
-	for r, rule in rules.items():
+	for r, rule in sorted(rules.items()):
 		save.write(r + " "  + rule.item + "\n")
 	save.write("__________________________________________________ \n \n")
 	for m in model:
@@ -434,7 +430,7 @@ def create_txt_double(modelA, modelB, rulesA, rulesB):  # Creates text file of S
 	save.write("SE Models \n")
 	save.write("__________________________________________________ \n")
 	save.write("Program A: \n")
-	for r, rule in rulesA.items():
+	for r, rule in sorted(rulesA.items()):
 		save.write(r + " " + rule.item + "\n")
 	save.write("__________________________________________________ \n")
 	save.write("A Models:\n")
@@ -444,7 +440,7 @@ def create_txt_double(modelA, modelB, rulesA, rulesB):  # Creates text file of S
 	save.write("__________________________________________________ \n")
 
 	save.write("Program B:\n")
-	for r, rule in rulesB.items():
+	for r, rule in sorted(rulesB.items()):
 		save.write(r + " " + rule.item + "\n")
 	save.write("__________________________________________________ \n")
 	save.write("B Models:\n")
