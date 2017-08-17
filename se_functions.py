@@ -40,7 +40,8 @@ def initialize(rules, propositions, pro):   # Calls a sequence of functions that
 		return model
 
 
-def get_file():				
+def get_file():	
+#Receives file name from user inout and returns a list consisting of the open file and file name			
 	while True:
 		file_name = input("Please input the name of a text-file containing a set of rules \n")
 		if file_name.endswith(".txt") == False:
@@ -97,18 +98,10 @@ def add_proposition(line, propositions): 				#Add atomic formulas when new rule 
 			#_new = Symbol("_" + prop)
 		propositions.add(new)
 
-def _mapping(propositions):
-	mapping = {}
-	for p in propositions:
-		if "_" in str(p):
-			continue
-		else:
-			corra = Symbol("_" + p)
-			mapping[p] = corra
-	return mapping
 
-def construct_program(file, pro):					# Scans through the input file parsing out individual rules and their \
-														#components 
+
+def construct_program(file, pro):
+# Scans through the input file parsing out individual rules and their components 
 	flag = False
 	rules = {}
 	count = 0
@@ -131,7 +124,8 @@ def construct_program(file, pro):					# Scans through the input file parsing out
 	return rules
 
 
-def add_rule(rule, rules):					# Adds a rule to an existing program or one that is under construction 
+def add_rule(rule, rules):					
+# Adds a rule to an existing program or one that is under construction 
 		count = len(rules.keys())
 		head = ""
 		pos_body = []
@@ -201,8 +195,9 @@ def add_rule(rule, rules):					# Adds a rule to an existing program or one that 
 		new = Rule(name, rule, head, pos_body, neg_body)
 		rules.update({name: new})
 
-def formula_translation(rules):				#Translates rules into propositional logic formulas using "&" for AND,
-	formulas = []							# "|" for OR and "~" for NOT
+def formula_translation(rules):				
+#Translates rules into propositional logic formulas using "&" for AND, "|" for OR and "~" for NOT
+	formulas = []						
 	for r, rule in rules.items():
 		pante = ""
 		nante = ""
@@ -309,8 +304,6 @@ def formula_translation(rules):				#Translates rules into propositional logic fo
 			for char in con:
 				char = Symbol(con)
 			con = simplify(con)
-		#print("Con: %s " %(con))
-		#print("ante: %s "% (ante))
 	#		print(ante)
 			ante = Not(ante)
 	#		print(ante)
@@ -343,8 +336,8 @@ def rule_compliment(rules, propositions):	#Each rule is given a "compliment" wit
 	return crules
 
 
-
-def get_com_org_imp(propositions):		#For each proposition p we introduce _p -> p 
+def get_com_org_imp(propositions):		
+#For each proposition p we introduce _p -> p 
 	comIorg = []
 	for p in propositions:
 		if "_" not in str(p):
@@ -356,8 +349,8 @@ def get_com_org_imp(propositions):		#For each proposition p we introduce _p -> p
 	return comIorg
 
 def create_condition(formulas, _formulas, comIorg): #The condition is comprised of (1) each formula derived from the 
-	conditions = comIorg[0]							# program, (2) the "compliments" of those rules, and (3) each 
-	for f in formulas:								# _p -> p formula. Every interpretation that satisfies this 
+	conditions = comIorg[0]							# program, (2) the "compliments" of those rules, and (3) for each 
+	for f in formulas:								# proposition p, _p -> p. Every interpretation that satisfies this 
 		conditions = And(f, conditions)				# condition will be a model.
 	for _f in _formulas:
 		conditions = And(_f, conditions)
@@ -455,27 +448,6 @@ def create_txt_double(modelA, modelB, rulesA, rulesB):  # Creates text file of S
 	save.close()
 	return save
 
-#def print_models(data):
-	#print("Which printer would you like to use?")
-	#printers = win32print.EnumPrinters(5)
-	#for p in printers:
-	#	print(p)
-	#printer_name = input()
-
-#	data = open("temp-file1324.txt", "rb").read () + b"\x0c"
-	
-#	printer_name = win32print.GetDefaultPrinter()
-#	printer = win32print.OpenPrinter (printer_name)
-#	try:
-#		job = win32print.StartDocPrinter(printer, 1, ("test of raw data", None, "RAW"))
-#		try:
-#			win32print.StartPagePrinter (printer)
-#			win32print.WritePrinter (printer, data)
-#			win32print.EndPagePrinter (printer)
-#		finally:
-#			win32print.EndDocPrinter (printer)
-#	finally:
-#		win32print.ClosePrinter (printer)
 
 
 def results(modelA, modelB):		# Prints results to user on the command line

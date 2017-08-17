@@ -9,26 +9,17 @@ was written on Python 3.6 but may run correctly on older versions. Version
 3.4 or higher, however, is recommended. The program can be opened in on the 
 command-line in Windows or Linux machines. 
 
-If Python 2 is not your default version of Python, go to the directory in which you have placed the 
-folder containing the program and type in the command line:
+In the command line, go to the directory in which you have placed the 
+folder containing the program and type:
 
-	python se_main.py
+	python main.py
 
-If you have Anaconda installed on your computer you need only type 
-“z_main.py”. 
+(If you have Anaconda installed on your computer you need only type 
+“z_main.py”)
 
-If you also have Python 2 installed on your computer and are using 
-Linus or OS, you may need to write “python3.x” rather than “python”
-
-
-You can also redirect files to the program on the command line and it will 
-immediately output the models:
-
-	python se_main.py < text.txt
-
-Using this method, the output can also be directly fed to another python program:
-
-	python se_main.py < test.txt | receiver.py 
+If both Python 2 and Python 3 are installed on your system you may need to write as follows:
+	
+	python3 main.py
 
 The program makes use of the logic module from the sympy library. It is 
 recommended that the user employ pip when installing Python libraries. To 
@@ -36,24 +27,15 @@ install sympy simply type:
 
        pip install sympy	(perhaps with a “sudo”)
 
-If you have both Python 2.x and 3.x installed on your system, it might 
-run Python 2.x by default, which will cause trouble both when trying to 
-run the program and when installing modules. 
+If you have both Python 2.x and 3.x installed on your system instally sympy as follows:
 
-If this is the case, type the following into the command prompt: 
-	
-	alias python='/usr/bin/python3'   (Linex)
-	
-	alias python='python3'			  (Mac)
+	python3   -m pip install SomePackage    (Mac, Linux OS)
 
-Then install sympy as follows:
+	or
 
-	pip install sympy					(Windows)
-	
-	python3.x -m pip install sympy		(Linux, Mac)
+	py -3   -m pip install SomePackage	(Windows)
 
-
-If you have trouble installing through pip, please try using Easy Install:
+ If you have trouble installing sympy through pip, please try using Easy Install:
 
 	easy_install sympy		(perhaps with sudo prefixed)
 
